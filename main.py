@@ -19,47 +19,58 @@ class MAIN_(UTILS_APII):
     def __init__(self) -> None:
         super().__init__()
 
-
+    
+    def liner_regression_momentum(self, df):
+        pass
 
 
     def in_squeeze(self, df):
-        return (df['lower_band'] > df['lower_keltner']) & (df['upper_band'] < df['upper_keltner'])
-    
-    def no_squeeze(self, df):
-        return (df['lower_band'] < df['lower_keltner']) & (df['upper_band'] > df['upper_keltner'])
+        last_6_rows = df.iloc[-6:]
+        return (last_6_rows['lower_band'] > last_6_rows['lower_keltner']).all() and \
+            (last_6_rows['upper_band'] < last_6_rows['upper_keltner']).all()
 
-    def squeeze_unMomentum(self, df):
+    def squeeze_unMomentum(self, data):
+        df = data.copy()
         df['20sma'] = df['Close'].rolling(window=20).mean()
         df['stddev'] = df['Close'].rolling(window=20).std()
-        df['lower_band'] = df['20sma'] - (2 * df['stddev'])
-        df['upper_band'] = df['20sma'] + (2 * df['stddev'])
+        df['lower_band'] = df['20sma'] - (2.618 * df['stddev'])
+        df['upper_band'] = df['20sma'] + (2.618 * df['stddev'])
 
         df['TR'] = abs(df['High'] - df['Low'])
         df['ATR'] = df['TR'].rolling(window=20).mean()
 
-        df['lower_keltner'] = df['20sma'] - (df['ATR'] * 1.5)
-        df['upper_keltner'] = df['20sma'] + (df['ATR'] * 1.5)
+        df['lower_keltner'] = df['20sma'] - (df['ATR'] * 1.618)
+        df['upper_keltner'] = df['20sma'] + (df['ATR'] * 1.618)
         
         df['squeeze_on'] = df.apply(self.in_squeeze, axis=1)
-        df['no_squeeze'] = df.apply(self.no_squeeze, axis=1)
-
-        df['squeeze_off'] = df.iloc[-3]['squeeze_on'] and not df.iloc[-1]['squeeze_on']
+        df['squeeze_off'] = df.iloc[-2]['squeeze_on'] and not df.iloc[-1]['squeeze_on']
+        df['no_squeeze'] = ~df['squeeze_on'] & ~df['squeeze_off']
 
         return df   
 
     def run(self):
         top_coins = ['BTCUSDT']
         for symbol in top_coins:
-            data = self.get_klines(symbol, custom_period=100)
+            updated_data = self.get_klines(symbol, custom_period=1000)
             # print(data)
-            updated_data = self.squeeze_unMomentum(data.copy())
+            updated_data = self.squeeze_unMomentum(updated_data)            
+            # atrrr = IDEASS()
+            # updated_data = self.atr_ranger(updated_data)
             print(updated_data)
 
 
-        # data_list = self.atr_ranging(data_list)
-        # for item in data_list:
-        #     print(f'symbol: {item["symbol"]}, Atr_level_100: {item["Atr_percentage_level"]},   Last_atr: {item["Last_atr"]}')
-        
+    def atr_ranger(self, data):
+        df = data.copy()
+        last_atr = float(df.iloc[-1]['ATR'])
+        atr_data_RangedList = sorted(df['ATR'].to_list()) 
+        print(last_atr)
+        strongest_atr = atr_data_RangedList[-1]
+        atr_level_100 = round((last_atr * 100 / strongest_atr), 2) 
+        df.loc[:, "atr_level_100"] = None 
+        df.loc[df.index[-1], "atr_level_100"] = atr_level_100
+
+        return df 
+
 
 if __name__=="__main__":
     main_obj = MAIN_()

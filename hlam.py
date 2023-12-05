@@ -217,3 +217,8 @@
         # plt.legend()
         # plt.title('Squeeze Momentum Indicator')
         # plt.show()
+
+
+
+    # def in_squeeze(self, df):
+    #     return (df['lower_band'] > df['lower_keltner']) & (df['upper_band'] < df['upper_keltner'])

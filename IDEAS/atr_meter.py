@@ -1,24 +1,26 @@
 import pandas_ta as ta
 
-
 class IDEASS():
     def __init__(self) -> None:
         pass
     # ///////////////////////////////////////////////////////////////////////////
-    def atr_ranging(self, data_list):
-            
-        for i, data in enumerate(data_list):
-            try:
-                atr_data_UnrangedList = self.calculate_steck_atrS(data[f"Average_data"])
-                last_atr = atr_data_UnrangedList[-1]
-                atr_data_RangedList = sorted(atr_data_UnrangedList) 
-                strongest_atr = atr_data_RangedList[-1]
-                atr_level_100 = round((last_atr *100 / strongest_atr), 2)  
-                data_list[i]["Atr_percentage_level"] = atr_level_100   
-                data_list[i]["Last_atr"] = last_atr
-            except Exception as ex:
-                    print(ex)
-                # logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+    def atr_ranging(self, data):
+        df = data.copy()
+
+        try:
+            atr_data_UnrangedList = self.calculate_steck_atrS(df)
+            last_atr = atr_data_UnrangedList[-1]
+            atr_data_RangedList = sorted(atr_data_UnrangedList) 
+            strongest_atr = atr_data_RangedList[-1]
+            atr_level_100 = round((last_atr *100 / strongest_atr), 2)  
+            df["Atr_percentage_level"] = None
+            df["Last_atr"] = None
+            df["Atr_percentage_level"].iloc[-1] = atr_level_100   
+            df["Last_atr"].iloc[-1] = last_atr
+        except Exception as ex:
+            print(ex)
+            # logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+        return df
 
     def calculate_steck_atrS(self, data):        
         data.sort_index(ascending=True, inplace=True) 
