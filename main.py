@@ -19,18 +19,7 @@ class MAIN_(UTILS_APII):
     def __init__(self) -> None:
         super().__init__()
 
-    # def chart(self, df):
-    #     candlestick = go.Candlestick(x=df['Date'], open=df['Open'], high=df['High'], low=df['Low'], close=df['Close'])
-    #     upper_band = go.Scatter(x=df['Date'], y=df['upper_band'], name='Upper Bollinger Band', line={'color': 'red'})
-    #     lower_band = go.Scatter(x=df['Date'], y=df['lower_band'], name='Lower Bollinger Band', line={'color': 'red'})
 
-    #     upper_keltner = go.Scatter(x=df['Date'], y=df['upper_keltner'], name='Upper Keltner Channel', line={'color': 'blue'})
-    #     lower_keltner = go.Scatter(x=df['Date'], y=df['lower_keltner'], name='Lower Keltner Channel', line={'color': 'blue'})
-
-    #     fig = go.Figure(data=[candlestick, upper_band, lower_band, upper_keltner, lower_keltner])
-    #     fig.layout.xaxis.type = 'category'
-    #     fig.layout.xaxis.rangeslider.visible = False
-    #     fig.show()
 
 
     def in_squeeze(self, df):
