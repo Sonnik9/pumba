@@ -19,6 +19,20 @@ class MAIN_(UTILS_APII):
     def __init__(self) -> None:
         super().__init__()
 
+    def atr_ranger(self, data):
+        df = data.copy()
+        last_atr = float(df.iloc[-1]['ATR'])
+        atr_data_RangedList = sorted(df['ATR'].to_list()) 
+        print(last_atr)
+        # print(atr_data_RangedList)        
+        strongest_atr = atr_data_RangedList[-1]
+        print(strongest_atr)
+        atr_level_100 = round((last_atr * 100 / strongest_atr), 2) 
+        df.loc[:, "atr_level_100"] = None 
+        df.loc[df.index[-1], "atr_level_100"] = atr_level_100
+
+        return df 
+
     
     def liner_regression_momentum(self, df):
         pass
@@ -51,25 +65,15 @@ class MAIN_(UTILS_APII):
     def run(self):
         top_coins = ['BTCUSDT']
         for symbol in top_coins:
-            updated_data = self.get_klines(symbol, custom_period=1000)
+            updated_data = self.get_klines(symbol, custom_period=1600)
             # print(data)
             updated_data = self.squeeze_unMomentum(updated_data)            
             # atrrr = IDEASS()
-            # updated_data = self.atr_ranger(updated_data)
+            updated_data = self.atr_ranger(updated_data)
             print(updated_data)
 
 
-    def atr_ranger(self, data):
-        df = data.copy()
-        last_atr = float(df.iloc[-1]['ATR'])
-        atr_data_RangedList = sorted(df['ATR'].to_list()) 
-        print(last_atr)
-        strongest_atr = atr_data_RangedList[-1]
-        atr_level_100 = round((last_atr * 100 / strongest_atr), 2) 
-        df.loc[:, "atr_level_100"] = None 
-        df.loc[df.index[-1], "atr_level_100"] = atr_level_100
 
-        return df 
 
 
 if __name__=="__main__":

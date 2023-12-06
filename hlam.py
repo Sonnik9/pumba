@@ -222,3 +222,27 @@
 
     # def in_squeeze(self, df):
     #     return (df['lower_band'] > df['lower_keltner']) & (df['upper_band'] < df['upper_keltner'])
+
+
+
+# url = 'https://open-api.coinglass.com/public/v2/open_interest'
+# symbol = 'BTCUSD'
+# headers = {
+#     'accept': 'application/json',
+#     'coinglassSecret': '1557b4ccbc624592b6b5c2d6a4d660ef'  # Замените на свой приватный ключ
+# }
+
+# params = {'symbol': symbol}
+
+# response = requests.get(url, params=params, headers=headers)
+
+# if response.status_code == 200:
+#     data = response.json()
+#     for exchange_data in data['data']:
+#         exchange_name = exchange_data['exchangeName']
+#         if exchange_name == 'Binance':
+#             open_interest = exchange_data['openInterest']
+#             print(f"Биржа: {exchange_name}, Открытый интерес: {open_interest}")
+
+# else:
+#     print(f"Error: {response.status_code}, {response.text}")
