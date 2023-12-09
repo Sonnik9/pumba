@@ -65,19 +65,25 @@ class TIME_TEMPLATES(URL_TEMPLATES):
         self.break_time = {}
         self.break_time["from"] = 3
         self.break_time["to"] = 4
-        self.KLINE_TIME, self.TIME_FRAME = 5, 'm'
+        self.KLINE_TIME, self.TIME_FRAME = 15, 'm'
         self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
 
 
 class FILTER_SET(TIME_TEMPLATES):
     def __init__(self) -> None:
         super().__init__()
-        self.SLICE_VOLUME_PAIRS = 5 # volums
-        # self.SLICE_VOLATILITY = 120 # volatility
-        self.MIN_FILTER_PRICE = 1 # min price
+        self.SLICE_VOLUME_PAIRS = 100 # volums
+         
+        # self.SLICE_VOLATILITY = 200 # volatility
+        self.MIN_FILTER_PRICE = 0.0001 # min price
         self.MAX_FILTER_PRICE = 3000000 # max price
         # self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT', 'ORDIUSDT']
         self.problem_pairs = ['DOGEUSDT'] # problem coins list
+        self.MIN_VOLUM_USDT = 50000
+
+        # websocket params:
+        self.PRICE_KLINE_1M_PERCENT_CHANGE = 1 # %
+        self.VOLUME_KLINE_1M_MULTIPLITER = 3
 
 class INIT_PARAMS(FILTER_SET):
     def __init__(self) -> None:

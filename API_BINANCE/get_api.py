@@ -93,8 +93,8 @@ class GETT_API(CONFIG):
                 data = data.astype(float)
             except Exception as e:
                 print(f"Error processing klines: {e}")
-        r_time = random.randrange(1,3) + (random.randrange(1,9) / 9)
-        time.sleep(r_time)
+        # r_time = random.randrange(1,3) + (random.randrange(1,9) / 9)
+        # time.sleep(r_time)
         return data
         
 # ////////////////////////////////////////////////////////////////////////////////////
