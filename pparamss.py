@@ -83,7 +83,7 @@ class FILTER_SET(TIME_TEMPLATES):
 
         # websocket params:
         self.PRICE_KLINE_1M_PERCENT_CHANGE = 1 # %
-        self.VOLUME_KLINE_1M_MULTIPLITER = 3
+        self.VOLUME_KLINE_1M_MULTIPLITER = 4
 
 class INIT_PARAMS(FILTER_SET):
     def __init__(self) -> None:

@@ -19,7 +19,7 @@
 # #         cumulative_volume_delta += volume_delta
 # #         # print(cumulative_volume_delta)
 # #         if volume_delta !=0:
-# #            cvd_percentage = (cumulative_volume_delta / volume_delta) * 100
+# #            cvd_percentage = (cumulative_volume_delta / volume_delta) * 5
 # #         cvd_percentage_values.append(cvd_percentage)
 
 # #     return cvd_percentage_values
@@ -93,7 +93,28 @@
 
 # print(pump_screen_data)
 
-s = set()
-s.add(1)
-s.add(1)
-print(len(s))
+# s = set()
+# s.add(1)
+# s.add(1)
+# print(len(s))
+
+# a = [1,10,20,22,222,1]
+# b = a.mean()
+# print(b)
+
+
+                # volume_pct_changes_5_list = []
+                # first_mean_5 = sum(volume_1m_5_list[:5]) / 5
+
+                # for i, x in enumerate(volume_1m_5_list[5:], start=5):
+                #     if first_mean_5 != 0:
+                #         per_cur_mean_5 = abs((x - first_mean_5) / first_mean_5) * 5
+                #     else:
+                #         first_mean_5 = sum(volume_1m_5_list[:i]) / i
+                #         try:
+                #             per_cur_mean_5 = abs((x - first_mean_5) / first_mean_5) * 5
+                #         except ZeroDivisionError:
+                #             per_cur_mean_5 = 0
+
+                #     volume_pct_changes_5_list.append(per_cur_mean_5)
+                #     first_mean_5 = per_cur_mean_5
