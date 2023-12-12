@@ -81,11 +81,23 @@ class FILTER_SET(TIME_TEMPLATES):
         self.problem_pairs = ['DOGEUSDT'] # problem coins list
         self.MIN_VOLUM_USDT = 50000
 
-        # websocket params:
-        self.PRICE_KLINE_1M_PERCENT_CHANGE = 1 # %
-        self.VOLUME_KLINE_1M_MULTIPLITER = 4
+        
 
-class INIT_PARAMS(FILTER_SET):
+
+
+class INDICATRS_SETTINGS(FILTER_SET):
+    def __init__(self) -> None:
+        super().__init__()
+        self.BB_stddev_MULTIPLITER = 1.5
+        self.KC_stddev_MULTIPLITER = 3
+
+        # websocket params:
+        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # %CHANGING/1min
+        self.VOLUME_KLINE_1M_MULTIPLITER = 4 # volum multipliter/1min
+
+    
+
+class INIT_PARAMS(INDICATRS_SETTINGS):
     def __init__(self) -> None:
         super().__init__()
         self.init_itits()

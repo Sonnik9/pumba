@@ -199,6 +199,8 @@ class MAIN_(UTILS_APII):
                             
                         }
                     )
+        # print("Монеты в сжатии:", coins_in_squeezeOn)
+        # print("Монеты после сжатия:", coins_in_squeezeOff)
 
             # if m15_data['squeeze_off'].iloc[-1]:
             #     coins_in_squeezeOff.append(symbol)
@@ -212,8 +214,7 @@ class MAIN_(UTILS_APII):
         # print("Кандидаты в ДАМП:", dump_candidates_coins)
 
 
-        # print("Монеты в сжатии:", coins_in_squeezeOn)
-        # print("Монеты после сжатия:", coins_in_squeezeOff)
+
 
 
 
