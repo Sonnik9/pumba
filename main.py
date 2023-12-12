@@ -35,6 +35,138 @@ class MAIN_(UTILS_APII):
 
     # ///////////////////////////////////////////////////////////////////////////////////////////
 
+    # //////////////////////////////////////////////////////////
+
+    def websocket_precession(self, symbol):
+        coins_in_squeezeOn_dict = {}
+        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
+        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
+        m1_data = self.get_klines(symbol, custom_period=100)
+
+        close_1m_100_list = m1_data['Close'].dropna().to_list()
+        volume_1m_100_list = m1_data['Volume'].dropna().to_list()
+
+        mean_close_1m_100 = sum(close_1m_100_list)/len(close_1m_100_list)
+        mean_volume_1m_100 = sum(volume_1m_100_list)/len(volume_1m_100_list)
+
+        max_close_1m_100 = max(close_1m_100_list)
+        max_volume_1m_100 = max(volume_1m_100_list)
+
+        # Calculate absolute percentage changes for 100-period
+        close_pct_changes_100_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(close_1m_100_list[:-1], close_1m_100_list[1:])]
+
+        volume_pct_changes_100_list = []
+
+        volume_smoothet_changes_100_list = []
+        first_mean_100 = sum(volume_1m_100_list[:5]) / 5
+
+        for i, x in enumerate(volume_1m_100_list[5:], start = 5):
+            if first_mean_100 != 0:
+                cur_mean_100 = (first_mean_100 + x) / 2
+            else:
+                first_mean_100 = sum(volume_1m_100_list[:i]) / i
+                try:
+                    cur_mean_100 = (first_mean_100 + x) / 2
+                except ZeroDivisionError:
+                    cur_mean_100 = 0
+
+            volume_smoothet_changes_100_list.append(cur_mean_100)
+            first_mean_100 = cur_mean_100
+
+        # print(volume_smoothet_changes_100_list)
+        volume_pct_changes_100_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(volume_smoothet_changes_100_list[:-1], volume_smoothet_changes_100_list[1:])]
+
+
+        mean_close_pct_change_100 = sum(close_pct_changes_100_list) / len(close_pct_changes_100_list)
+        mean_volume_pct_change_100 = sum(volume_pct_changes_100_list) / len(volume_pct_changes_100_list)
+        max_close_pct_change_100 = max(close_pct_changes_100_list)
+        max_volume_pct_change_100 = max(volume_pct_changes_100_list)
+
+
+        close_1m_5_list = m1_data['Close'].iloc[-11:].dropna().to_list()
+        volume_1m_5_list = m1_data['Volume'].iloc[-11:].dropna().to_list()
+
+        mean_close_1m_5 = sum(close_1m_5_list)/len(close_1m_5_list)
+        mean_volume_1m_5 = sum(volume_1m_5_list)/len(volume_1m_5_list)
+
+        max_close_1m_5 = max(close_1m_5_list)
+        max_volume_1m_5 = max(volume_1m_5_list)
+        
+        close_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(close_1m_5_list[:-1], close_1m_5_list[1:])]
+
+        
+        volume_pct_changes_5_list = []
+
+        volume_smoothet_changes_5_list = []
+        first_mean_5 = sum(volume_1m_5_list[:5]) / 5
+
+        for i, x in enumerate(volume_1m_5_list[5:], start = 5):
+            if first_mean_5 != 0:
+                cur_mean_5 = (first_mean_5 + x) / 2
+            else:
+                first_mean_5 = sum(volume_1m_5_list[:i]) / i
+                try:
+                    cur_mean_5 = (first_mean_5 + x) / 2
+                except ZeroDivisionError:
+                    cur_mean_5 = 0
+
+            volume_smoothet_changes_5_list.append(cur_mean_5)
+            first_mean_5 = cur_mean_5
+
+        # print(volume_smoothet_changes_5_list)
+        volume_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(volume_smoothet_changes_5_list[:-1], volume_smoothet_changes_5_list[1:])]
+
+        mean_close_pct_change_5 = sum(close_pct_changes_5_list) / len(close_pct_changes_5_list)
+        mean_volume_pct_change_5 = sum(volume_pct_changes_5_list) / len(volume_pct_changes_5_list)
+        max_close_pct_change_5 = max(close_pct_changes_5_list)
+        max_volume_pct_change_5 = max(volume_pct_changes_5_list)
+
+        if mean_volume_1m_5 != 0:
+            coins_in_squeezeOn_dict = {
+                "symbol": symbol, 
+
+                "close_1m_5_list": close_1m_5_list,
+                "volume_1m_5_list": volume_1m_5_list,
+
+                "mean_close_1m_5": mean_close_1m_5, 
+                "mean_volume_1m_5": mean_volume_1m_5, 
+
+                "max_close_1m_5": max_close_1m_5,
+                "max_volume_1m_5": max_volume_1m_5,
+
+                "close_pct_changes_5_list": close_pct_changes_5_list,
+                "volume_pct_changes_5_list": volume_pct_changes_5_list,
+
+                "mean_close_pct_change_5": mean_close_pct_change_5,
+                "mean_volume_pct_change_5": mean_volume_pct_change_5,
+
+                "max_close_pct_change_5": max_close_pct_change_5,
+                "max_volume_pct_change_5": max_volume_pct_change_5,
+
+                
+                "close_1m_100_list": close_1m_100_list,
+                "volume_1m_100_list": volume_1m_100_list,
+
+                "mean_close_1m_100": mean_close_1m_100, 
+                "mean_volume_1m_100": mean_volume_1m_100, 
+
+                "max_close_1m_100": max_close_1m_100,
+                "max_volume_1m_100": max_volume_1m_100,
+
+                "close_pct_changes_100_list": close_pct_changes_100_list,
+                "volume_pct_changes_100_list": volume_pct_changes_100_list,
+
+                "mean_close_pct_change_100": mean_close_pct_change_100, 
+                "mean_volume_pct_change_100": mean_volume_pct_change_100,
+
+                "max_close_pct_change_100": max_close_pct_change_100,
+                "max_volume_pct_change_100": max_volume_pct_change_100,                    
+            }            
+
+            return coins_in_squeezeOn_dict
+
+    # /////////////////////////////////////////////////////////
+
     # def liner_regression_momentum(self, df):
     #     pass
     def in_squeeze(self, df):
@@ -46,14 +178,14 @@ class MAIN_(UTILS_APII):
         df = data.copy()
         df['20sma'] = df['Close'].rolling(window=20).mean()
         df['stddev'] = df['Close'].rolling(window=20).std()
-        df['lower_band'] = df['20sma'] - (1.6 * df['stddev'])
-        df['upper_band'] = df['20sma'] + (1.6 * df['stddev'])
+        df['lower_band'] = df['20sma'] - (self.BB_stddev_MULTIPLITER * df['stddev'])
+        df['upper_band'] = df['20sma'] + (self.BB_stddev_MULTIPLITER * df['stddev'])
 
         df['TR'] = abs(df['High'] - df['Low'])
         df['ATR'] = df['TR'].rolling(window=20).mean()
 
-        df['lower_keltner'] = df['20sma'] - (df['ATR'] * 1.1)
-        df['upper_keltner'] = df['20sma'] + (df['ATR'] * 1.1)
+        df['lower_keltner'] = df['20sma'] - (df['ATR'] * self.KC_stddev_MULTIPLITER)
+        df['upper_keltner'] = df['20sma'] + (df['ATR'] * self.KC_stddev_MULTIPLITER)
         
         df['squeeze_on'] = df.apply(self.in_squeeze, axis=1)
         df['squeeze_off'] = df.iloc[-2]['squeeze_on'] and not df.iloc[-1]['squeeze_on']
@@ -76,129 +208,9 @@ class MAIN_(UTILS_APII):
             m15_data = self.squeeze_unMomentum(m15_data)            
             
             if m15_data['squeeze_on'].iloc[-1]:
+                coins_in_squeezeOn.append(self.websocket_precession(symbol))
                 
-                self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
-                self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-                m1_data = self.get_klines(symbol, custom_period=100)
 
-                close_1m_100_list = m1_data['Close'].dropna().to_list()
-                volume_1m_100_list = m1_data['Volume'].dropna().to_list()
-
-                mean_close_1m_100 = sum(close_1m_100_list)/len(close_1m_100_list)
-                mean_volume_1m_100 = sum(volume_1m_100_list)/len(volume_1m_100_list)
-
-                max_close_1m_100 = max(close_1m_100_list)
-                max_volume_1m_100 = max(volume_1m_100_list)
-
-                # Calculate absolute percentage changes for 100-period
-                close_pct_changes_100_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(close_1m_100_list[:-1], close_1m_100_list[1:])]
-
-                volume_pct_changes_100_list = []
-                first_mean_100 = sum(volume_1m_100_list[:5]) / 5
-
-                for i, x in enumerate(volume_1m_100_list[5:], start=5):
-                    if first_mean_100 != 0:
-                        per_cur_mean_100 = abs((x - first_mean_100) / first_mean_100) * 100
-                    else:
-                        first_mean_100 = sum(volume_1m_100_list[:i]) / i
-                        try:
-                            per_cur_mean_100 = abs((x - first_mean_100) / first_mean_100) * 100
-                        except ZeroDivisionError:
-                            per_cur_mean_100 = 0
-
-                    volume_pct_changes_100_list.append(per_cur_mean_100)
-                    first_mean_100 = per_cur_mean_100
-
-
-                mean_close_pct_change_100 = sum(close_pct_changes_100_list) / len(close_pct_changes_100_list)
-                mean_volume_pct_change_100 = sum(volume_pct_changes_100_list) / len(volume_pct_changes_100_list)
-                max_close_pct_change_100 = max(close_pct_changes_100_list)
-                max_volume_pct_change_100 = max(volume_pct_changes_100_list)
-
-
-                close_1m_5_list = m1_data['Close'].iloc[-11:].dropna().to_list()
-                volume_1m_5_list = m1_data['Volume'].iloc[-11:].dropna().to_list()
-
-                mean_close_1m_5 = sum(close_1m_5_list)/len(close_1m_5_list)
-                mean_volume_1m_5 = sum(volume_1m_5_list)/len(volume_1m_5_list)
-
-                max_close_1m_5 = max(close_1m_5_list)
-                max_volume_1m_5 = max(volume_1m_5_list)
-                
-                close_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(close_1m_5_list[:-1], close_1m_5_list[1:])]
-                
-                volume_pct_changes_5_list = []
-
-                volume_smoothet_changes_5_list = []
-                first_mean_5 = sum(volume_1m_5_list[:5]) / 5
-
-                for i, x in enumerate(volume_1m_5_list[5:], start = 5):
-                    if first_mean_5 != 0:
-                        cur_mean_5 = (first_mean_5 + x) / 2
-                    else:
-                        first_mean_5 = sum(volume_1m_5_list[:i]) / i
-                        try:
-                            cur_mean_5 = (first_mean_5 + x) / 2
-                        except ZeroDivisionError:
-                            cur_mean_5 = 0
-
-                    volume_smoothet_changes_5_list.append(cur_mean_5)
-                    first_mean_5 = cur_mean_5
-
-                # print(volume_smoothet_changes_5_list)
-
-                volume_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(volume_smoothet_changes_5_list[:-1], volume_smoothet_changes_5_list[1:])]
-
-                mean_close_pct_change_5 = sum(close_pct_changes_5_list) / len(close_pct_changes_5_list)
-                mean_volume_pct_change_5 = sum(volume_pct_changes_5_list) / len(volume_pct_changes_5_list)
-                max_close_pct_change_5 = max(close_pct_changes_5_list)
-                max_volume_pct_change_5 = max(volume_pct_changes_5_list)
-
-                if mean_volume_1m_5 != 0:
-                    coins_in_squeezeOn.append(
-                        {
-                            "symbol": symbol, 
-
-                            "close_1m_5_list": close_1m_5_list,
-                            "volume_1m_5_list": volume_1m_5_list,
-
-                            "mean_close_1m_5": mean_close_1m_5, 
-                            "mean_volume_1m_5": mean_volume_1m_5, 
-
-                            "max_close_1m_5": max_close_1m_5,
-                            "max_volume_1m_5": max_volume_1m_5,
-
-                            "close_pct_changes_5_list": close_pct_changes_5_list,
-                            "volume_pct_changes_5_list": volume_pct_changes_5_list,
-
-                            "mean_close_pct_change_5": mean_close_pct_change_5,
-                            "mean_volume_pct_change_5": mean_volume_pct_change_5,
-
-                            "max_close_pct_change_5": max_close_pct_change_5,
-                            "max_volume_pct_change_5": max_volume_pct_change_5,
-
-                            
-                            # "close_1m_100_list": close_1m_100_list,
-                            # "volume_1m_100_list": volume_1m_100_list,
-
-                            # "mean_close_1m_100": mean_close_1m_100, 
-                            # "mean_volume_1m_100": mean_volume_1m_100, 
-
-                            # "max_close_1m_100": max_close_1m_100,
-                            # "max_volume_1m_100": max_volume_1m_100,
-
-                            # "close_pct_changes_100_list": close_pct_changes_100_list,
-                            # "volume_pct_changes_100_list": volume_pct_changes_100_list,
-
-                            # "mean_close_pct_change_100": mean_close_pct_change_100, "mean_volume_pct_change_100": mean_volume_pct_change_100,
-
-                            # "max_close_pct_change_100": max_close_pct_change_100,
-                            # "max_volume_pct_change_100": max_volume_pct_change_100,
-
-
-                            
-                        }
-                    )
         # print("Монеты в сжатии:", coins_in_squeezeOn)
         # print("Монеты после сжатия:", coins_in_squeezeOff)
 
