@@ -65,7 +65,7 @@ class TIME_TEMPLATES(URL_TEMPLATES):
         self.break_time = {}
         self.break_time["from"] = 3
         self.break_time["to"] = 4
-        self.KLINE_TIME, self.TIME_FRAME = 15, 'm'
+        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
         self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
 
 
@@ -92,8 +92,8 @@ class INDICATRS_SETTINGS(FILTER_SET):
         self.KC_stddev_MULTIPLITER = 3
 
         # websocket params:
-        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # %CHANGING/1min
-        self.VOLUME_KLINE_1M_MULTIPLITER = 4 # volum multipliter/1min
+        self.PRICE_KLINE_1M_PERCENT_CHANGE = 1 # %CHANGING/1min
+        self.VOLUME_KLINE_1M_MULTIPLITER = 2 # volum multipliter/1min
 
     
 
