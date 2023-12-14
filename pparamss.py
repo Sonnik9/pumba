@@ -78,22 +78,19 @@ class FILTER_SET(TIME_TEMPLATES):
         self.MIN_FILTER_PRICE = 0.0001 # min price
         self.MAX_FILTER_PRICE = 3000000 # max price
         # self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT', 'ORDIUSDT']
-        self.problem_pairs = ['DOGEUSDT'] # problem coins list
+        # self.problem_pairs = ['DOGEUSDT'] # problem coins list
+        self.problem_pairs = [] 
         self.MIN_VOLUM_USDT = 50000
-
-        
-
-
 
 class INDICATRS_SETTINGS(FILTER_SET):
     def __init__(self) -> None:
         super().__init__()
-        self.BB_stddev_MULTIPLITER = 2.75
+        self.BB_stddev_MULTIPLITER = 2.6
         self.KC_stddev_MULTIPLITER = 1.5
 
         # websocket params:
         self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.3 # %CHANGING/1min
-        self.VOLUME_KLINE_1M_MULTIPLITER = 1.5 # volum multipliter/1min
+        self.VOLUME_KLINE_1M_MULTIPLITER = 2.0 # volum multipliter/1min
 
     
 
