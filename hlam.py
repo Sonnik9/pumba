@@ -1197,3 +1197,13 @@
 # print(volume_pct_changes_100_list)
 # print(mean_volume_pct_change_100)
 # print(max_volume_pct_change_100)
+
+
+                                                        # if counter >= COUNT_TO:
+                                                        #     coins_in_squeezeOn[i]["mean_close_1m_5"] = y["last_close_price"]
+                                                        #     # coins_in_squeezeOn[i]["mean_close_1m_5"] = ((x["mean_close_1m_5"]* 4) + y["last_close_price"]) / 5
+                                                        #     coins_in_squeezeOn[i]["mean_volume_1m_5"] = ((x["mean_volume_1m_5"] * 4) + y["last_volume"]) / 5
+                                                        #     # print(f"coins_in_squeezeOn[i]['close_1m_mean']: {x['symbol']}: {coins_in_squeezeOn[i]['close_1m_mean']}")
+                                                        #     # print(f"coins_in_squeezeOn[i]['volume_1m_mean']: {x['symbol']}: {coins_in_squeezeOn[i]['volume_1m_mean']}")
+                                                        #     print(f"counter2: {counter}")
+                                                        #     counter = 0

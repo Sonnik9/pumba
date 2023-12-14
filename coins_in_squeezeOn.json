@@ -1,132 +1,37 @@
 [
     {
-        "symbol": "DOTUSDT",
-        "mean_close_1m_5": 7.49,
-        "mean_volume_1m_5": 5148.48
-    },
-    {
-        "symbol": "DASHUSDT",
-        "mean_close_1m_5": 33.48818181818182,
-        "mean_volume_1m_5": 801.2816363636364
-    },
-    {
-        "symbol": "TRXUSDT",
-        "mean_close_1m_5": 0.10414181818181817,
-        "mean_volume_1m_5": 137537.73636363636
-    },
-    {
-        "symbol": "VETUSDT",
-        "mean_close_1m_5": 0.031266363636363634,
-        "mean_volume_1m_5": 336328.66363636364
-    },
-    {
-        "symbol": "MEMEUSDT",
-        "mean_close_1m_5": 0.03455627272727273,
-        "mean_volume_1m_5": 978273.8181818182
-    },
-    {
-        "symbol": "1000SHIBUSDT",
-        "mean_close_1m_5": 0.009857181818181819,
-        "mean_volume_1m_5": 11911448.545454545
-    },
-    {
-        "symbol": "DODOXUSDT",
-        "mean_close_1m_5": 0.15542090909090908,
-        "mean_volume_1m_5": 6826.727272727273
-    },
-    {
-        "symbol": "USTCUSDT",
-        "mean_close_1m_5": 0.04118483545454546,
-        "mean_volume_1m_5": 432763.45454545453
-    },
-    {
-        "symbol": "SXPUSDT",
-        "mean_close_1m_5": 0.3760090909090909,
-        "mean_volume_1m_5": 4110.754545454545
-    },
-    {
-        "symbol": "GLMRUSDT",
-        "mean_close_1m_5": 0.3458,
-        "mean_volume_1m_5": 8714.10909090909
+        "symbol": "IOTAUSDT",
+        "mean_close_1m_5": 0.29203636363636365,
+        "mean_volume_1m_5": 19510.090909090908
     },
     {
         "symbol": "GRTUSDT",
-        "mean_close_1m_5": 0.16326363636363636,
-        "mean_volume_1m_5": 36045.09090909091
+        "mean_close_1m_5": 0.1711818181818182,
+        "mean_volume_1m_5": 54234.545454545456
     },
     {
-        "symbol": "DYDXUSDT",
-        "mean_close_1m_5": 2.855272727272727,
-        "mean_volume_1m_5": 9115.469090909091
+        "symbol": "HOTUSDT",
+        "mean_close_1m_5": 0.0022974545454545452,
+        "mean_volume_1m_5": 1370533.0909090908
     },
     {
-        "symbol": "CYBERUSDT",
-        "mean_close_1m_5": 6.369909090909091,
-        "mean_volume_1m_5": 806.2754545454544
+        "symbol": "RLCUSDT",
+        "mean_close_1m_5": 1.7049090909090907,
+        "mean_volume_1m_5": 1828.909090909091
     },
     {
-        "symbol": "1INCHUSDT",
-        "mean_close_1m_5": 0.3732454545454545,
-        "mean_volume_1m_5": 3570.5363636363645
+        "symbol": "SKLUSDT",
+        "mean_close_1m_5": 0.04526545454545455,
+        "mean_volume_1m_5": 183853.36363636365
     },
     {
-        "symbol": "1000PEPEUSDT",
-        "mean_close_1m_5": 0.0014122454545454548,
-        "mean_volume_1m_5": 85052126.0909091
+        "symbol": "DENTUSDT",
+        "mean_close_1m_5": 0.001148,
+        "mean_volume_1m_5": 3779126.272727273
     },
     {
-        "symbol": "APEUSDT",
-        "mean_close_1m_5": 1.7932727272727271,
-        "mean_volume_1m_5": 15032.187272727273
-    },
-    {
-        "symbol": "ENSUSDT",
-        "mean_close_1m_5": 8.892727272727273,
-        "mean_volume_1m_5": 245.97454545454545
-    },
-    {
-        "symbol": "BATUSDT",
-        "mean_close_1m_5": 0.24057272727272724,
-        "mean_volume_1m_5": 7361.090909090909
-    },
-    {
-        "symbol": "UNIUSDT",
-        "mean_close_1m_5": 6.277090909090908,
-        "mean_volume_1m_5": 2311.179090909091
-    },
-    {
-        "symbol": "LRCUSDT",
-        "mean_close_1m_5": 0.2575818181818182,
-        "mean_volume_1m_5": 11036.272727272728
-    },
-    {
-        "symbol": "ACHUSDT",
-        "mean_close_1m_5": 0.020548181818181823,
-        "mean_volume_1m_5": 34929.36363636364
-    },
-    {
-        "symbol": "PHBUSDT",
-        "mean_close_1m_5": 0.8352454545454545,
-        "mean_volume_1m_5": 526.4545454545455
-    },
-    {
-        "symbol": "CRVUSDT",
-        "mean_close_1m_5": 0.6397454545454546,
-        "mean_volume_1m_5": 6014.099999999999
-    },
-    {
-        "symbol": "STGUSDT",
-        "mean_close_1m_5": 0.527109090909091,
-        "mean_volume_1m_5": 28658.236363636363
-    },
-    {
-        "symbol": "BNXUSDT",
-        "mean_close_1m_5": 0.2922181818181818,
-        "mean_volume_1m_5": 531.0
-    },
-    {
-        "symbol": "KNCUSDT",
-        "mean_close_1m_5": 0.7068181818181817,
-        "mean_volume_1m_5": 2329.609090909091
+        "symbol": "ANTUSDT",
+        "mean_close_1m_5": 5.776272727272727,
+        "mean_volume_1m_5": 31.84545454545455
     }
 ]
