@@ -1,7 +1,7 @@
 from API_BINANCE.utils_api import UTILS_APII
+from API_YF.get_yf_data import GETT_HISTORICAL_DATA
 
-
-class SQUEEZE(UTILS_APII):
+class SQUEEZE(UTILS_APII, GETT_HISTORICAL_DATA):
 
     def __init__(self) -> None:
         super().__init__()

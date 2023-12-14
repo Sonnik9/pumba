@@ -1,6 +1,7 @@
-from API_BINANCE.get_api import GETT_API
+# from API_BINANCE.get_api import GETT_API
+from API_BINANCE.ccxt_mode import GETT_API_CCXT
 
-class UTILS_APII(GETT_API):
+class UTILS_APII(GETT_API_CCXT):
 
     def __init__(self) -> None:
         super().__init__()

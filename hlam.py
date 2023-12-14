@@ -866,3 +866,334 @@
 
         # print(volume_smoothet_changes_5_list)
         # volume_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(volume_smoothet_changes_5_list[:-1], volume_smoothet_changes_5_list[1:])]
+
+
+
+
+    # def get_klines(self, symbol, custom_period):
+    #     params = {}
+    #     klines = None
+    #     data = None
+    #     url = self.URL_PATTERN_DICT["klines_url"]
+    #     params["symbol"] = symbol
+    #     params["interval"] = self.INTERVAL
+    #     # if custom_period:
+    #     #     params["limit"] = custom_period
+
+    #     # Make the API request
+    #     # params = self.get_signature(params)
+    #     klines = self.HTTP_request(url, method=method, params=params)
+
+    #     # Debugging: Print the raw API response
+    #     # print("Raw API Response:", klines)
+
+    #     if klines:
+    #         try:
+    #             # Process the data
+    #             data = pd.DataFrame(klines).iloc[:, :6]
+    #             data.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+    #             data = data.set_index('Time')
+    #             # data.index = pd.to_datetime(data.index, unit='ms')
+    #             data.index = pd.to_datetime(data.index, unit='ms').tz_localize('UTC')
+
+    #             data = data.astype(float)
+
+    #             # Sort the DataFrame by the 'Time' column
+    #             data = data.sort_values(by='Time')
+
+    #             # Debugging: Print the processed and sorted DataFrame
+    #             print("Processed and Sorted DataFrame:", data)
+
+    #         except Exception as e:
+    #             print(f"Error processing klines: {e}")
+        
+    #     return data
+
+
+# # import requests
+
+# # def get_order_book(symbol, limit=30):
+# #     base_url = "https://api.binance.com/api/v3/depth"
+# #     params = {"symbol": symbol, "limit": limit}
+# #     response = requests.get(base_url, params=params)
+# #     order_book = response.json()
+# #     # print(order_book)
+# #     return order_book
+
+# # def calculate_cvd_percentage(order_book):
+# #     cvd_percentage_values = []
+# #     bid_volumes = [float(bid[1]) for bid in order_book["bids"]]
+# #     ask_volumes = [float(ask[1]) for ask in order_book["asks"]]
+# #     cumulative_volume_delta = 0
+# #     for bid_volume, ask_volume in zip(bid_volumes, ask_volumes):
+# #         volume_delta = bid_volume - ask_volume
+# #         print(f"ask_volume: {ask_volume}, bid_volume: {bid_volume}")
+# #         cumulative_volume_delta += volume_delta
+# #         # print(cumulative_volume_delta)
+# #         if volume_delta !=0:
+# #            cvd_percentage = (cumulative_volume_delta / volume_delta) * 5
+# #         cvd_percentage_values.append(cvd_percentage)
+
+# #     return cvd_percentage_values
+
+# # # Example usage
+# # symbol = "BTCUSDT"
+# # order_book = get_order_book(symbol)
+# # cvd_percentage_result = calculate_cvd_percentage(order_book)
+
+# # print(f"Cumulative Volume Delta Percentage values: {cvd_percentage_result}")
+
+
+
+# # a = [2,1,56,43,89]
+
+# # b = sorted(a, reverse=False)
+# # print(b)
+
+# from API_BINANCE.get_api import GETT_API
+# import pandas_ta as ta
+# import math
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import logging, os, inspect
+
+
+# def pump_screen(data):
+#     # Применяем условия для сквизов
+#     sqz_on = (data['lower_bb'] > data['lower_kc']) & (data['upper_bb'] < data['upper_kc'])
+#     # val_positive = data['val'] > 0
+#     val_positive = 9
+
+#     # Создаем скринер для пампа
+#     pump_screen = data[sqz_on & val_positive]
+
+#     return pump_screen
+
+#     # return pump_screen[['Close', 'lower_bb', 'upper_bb', 'lower_kc', 'upper_kc', 'val']]
+
+# # Пример использования с некоторыми фиктивными данными
+# # data = pd.DataFrame({
+# #     'Close': np.random.randn(200) + np.linspace(30, 50, 200),
+# #     'High': np.random.randn(200) + np.linspace(30, 50, 200),
+# #     'Low': np.random.randn(200) + np.linspace(30, 50, 200)
+# # }, index=pd.date_range('2022-01-01', periods=200, freq='D'))
+
+# get_api = GETT_API()
+# symbol = 'LTCUSDT'
+# data = get_api.get_klines(symbol, custom_period=73)
+
+# data['lower_bb'] = data['Close'].rolling(window=20).mean() - 2 * data['Close'].rolling(window=20).std()
+# data['upper_bb'] = data['Close'].rolling(window=20).mean() + 2 * data['Close'].rolling(window=20).std()
+
+# data['ma'] = data['Close'].rolling(window=20).mean()
+# data['range_'] = data['High'] - data['Low']
+# data['range_ma'] = data['range_'].rolling(window=20).mean()
+# data['lower_kc'] = data['ma'] - data['range_ma'] * 1.5
+# data['upper_kc'] = data['ma'] + data['range_ma'] * 1.5
+
+# data['sqz_on'] = (data['lower_bb'] > data['lower_kc']) & (data['upper_bb'] < data['upper_kc'])
+
+# data['val'] = data['Close'].rolling(window=20).apply(lambda x: np.dot(x - [np.max(x), np.min(x), np.mean(x), np.mean(x)], [1, -1, -1, 1]) / 20, raw=True
+
+# )
+
+# # data['val'] = None
+
+# # Применяем памп скринер
+# pump_screen_data = pump_screen(data)
+
+# print(pump_screen_data)
+
+# s = set()
+# s.add(1)
+# s.add(1)
+# print(len(s))
+
+# a = [1,10,20,22,222,1]
+# b = a.mean()
+# print(b)
+
+
+                # volume_pct_changes_5_list = []
+                # first_mean_5 = sum(volume_1m_5_list[:5]) / 5
+
+                # for i, x in enumerate(volume_1m_5_list[5:], start=5):
+                #     if first_mean_5 != 0:
+                #         per_cur_mean_5 = abs((x - first_mean_5) / first_mean_5) * 5
+                #     else:
+                #         first_mean_5 = sum(volume_1m_5_list[:i]) / i
+                #         try:
+                #             per_cur_mean_5 = abs((x - first_mean_5) / first_mean_5) * 5
+                #         except ZeroDivisionError:
+                #             per_cur_mean_5 = 0
+
+                #     volume_pct_changes_5_list.append(per_cur_mean_5)
+                #     first_mean_5 = per_cur_mean_5
+
+
+# import ccxt
+# import pandas as pd
+
+# class BinanceDataFetcher:
+#     def __init__(self, api_key, api_secret):
+#         self.exchange = ccxt.binance({
+#             'apiKey': api_key,
+#             'secret': api_secret,
+#             'enableRateLimit': True,  # Optional: enable rate limiting
+#         })
+
+#     def get_klines(self, symbol, timeframe, limit=11):
+#         try:
+#             klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+#             data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
+#             data['Time'] = pd.to_datetime(data['Time'], unit='ms')
+#             data.set_index('Time', inplace=True)
+#             return data
+#         except Exception as e:
+#             print(f"Error fetching klines: {e}")
+#             return pd.DataFrame()
+
+# # Usage example
+# api_key = "vPlx4lmDIcgMT6QcUhvW0yoNHgXawtKQrqmwOgCEneoNtRbe9JmT1qVdo1WUZjAr"
+# api_secret = "lll0IA6Gyqf2vn2qijISrzjf5ru99Z6hbnFE20SJxP1kIKr5czyHxPJeYnlHSzwE"
+# symbol = 'BNB/USDT'  # Replace with the symbol you're interested in
+# timeframe = '1m'  # You can change the timeframe (e.g., '5m', '1h', '1d')
+
+# binance_fetcher = BinanceDataFetcher(api_key, api_secret)
+# klines_data = binance_fetcher.get_klines(symbol, timeframe)
+
+# # Display the fetched data
+# print(klines_data)
+
+
+# volume_1m_100_list = [
+#             64.315,
+#             41.09,
+#             70.034,
+#             94.64,
+#             53.78,
+#             341.913,
+#             73.146,
+#             48.93,
+#             73.448,
+#             80.405,
+#             18.414,
+#             63.107,
+#             24.342,
+#             121.827,
+#             84.947,
+#             44.553,
+#             49.403,
+#             50.817,
+#             91.442,
+#             23.119,
+#             91.393,
+#             73.887,
+#             104.835,
+#             127.035,
+#             94.899,
+#             104.324,
+#             55.485,
+#             21.727,
+#             55.065,
+#             30.683,
+#             96.704,
+#             152.749,
+#             52.748,
+#             99.289,
+#             26.494,
+#             91.097,
+#             21.226,
+#             48.967,
+#             8.836,
+#             81.969,
+#             78.554,
+#             18.363,
+#             132.055,
+#             150.064,
+#             77.864,
+#             115.236,
+#             108.22,
+#             183.065,
+#             17.491,
+#             67.805,
+#             82.747,
+#             135.535,
+#             61.758,
+#             69.773,
+#             76.732,
+#             132.284,
+#             61.125,
+#             134.023,
+#             49.227,
+#             23.188,
+#             76.295,
+#             32.465,
+#             121.51,
+#             49.03,
+#             104.778,
+#             39.568,
+#             70.224,
+#             40.144,
+#             59.825,
+#             21.829,
+#             19.902,
+#             74.134,
+#             53.007,
+#             17.714,
+#             18.926,
+#             99.883,
+#             144.231,
+#             70.54,
+#             167.106,
+#             162.608,
+#             59.103,
+#             4.269,
+#             23.465,
+#             22.951,
+#             88.468,
+#             161.886,
+#             46.108,
+#             101.162,
+#             73.176,
+#             34.578,
+#             55.555,
+#             18.077,
+#             119.335,
+#             172.978,
+#             54.313,
+#             101.451,
+#             64.63,
+#             81.446,
+#             98.178,
+#             180.563
+#         ]
+
+# volume_pct_changes_100_list = []        
+# first_mean_100 = sum(volume_1m_100_list[:6]) / 6
+
+# for i, x in enumerate(volume_1m_100_list[6:], start=6):
+#     # print(i)
+#     # print(x)
+#     if first_mean_100 != 0:
+#         cur_mean_100 = (first_mean_100 + x) / 2
+#         # cur_per_change = ((x - cur_mean_100) / cur_mean_100)* 100
+#         cur_per_change = x / cur_mean_100
+#     else:
+#         first_mean_100 = sum(volume_1m_100_list[:i]) / i
+#         try:
+#             cur_mean_100 = (first_mean_100 + x) / 2
+#         except ZeroDivisionError:
+#             cur_mean_100 = 0
+#     volume_pct_changes_100_list.append(cur_per_change)            
+#     first_mean_100 = cur_mean_100
+
+
+# # mean_close_pct_change_100 = sum(close_pct_changes_100_list) / len(close_pct_changes_100_list)
+# mean_volume_pct_change_100 = sum(volume_pct_changes_100_list) / len(volume_pct_changes_100_list)
+# # max_close_pct_change_100 = max(close_pct_changes_100_list)
+# max_volume_pct_change_100 = max(volume_pct_changes_100_list)
+# print(volume_pct_changes_100_list)
+# print(mean_volume_pct_change_100)
+# print(max_volume_pct_change_100)

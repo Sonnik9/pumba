@@ -1,6 +1,0 @@
-import pandas_ta as ta
-
-class IDEASS():
-    def __init__(self) -> None:
-        pass
-    # ///////////////////////////////////////////////////////////////////////////
