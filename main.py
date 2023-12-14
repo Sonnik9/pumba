@@ -1,6 +1,5 @@
 from monitoringg import LIVE_MONITORING
 import asyncio
-# import pandas_ta as ta
 import logging, os, inspect
 import os, pandas
 import json
@@ -56,7 +55,7 @@ class MAIN_(LIVE_MONITORING):
             with open(json_file_path, 'w') as json_file:
                 json.dump(coins_in_squeezeOn, json_file, indent=4)              
 
-            candidate_coins = asyncio.run(self.price_volume_monitoring(coins_in_squeezeOn, self.PRICE_KLINE_1M_PERCENT_CHANGE, self.VOLUME_KLINE_1M_MULTIPLITER))
+            candidate_coins = asyncio.run(self.price_volume_monitoring(coins_in_squeezeOn))
             print("Кандидаты в ПАМП/ДАМП:", candidate_coins)            
             for x, defender in candidate_coins:
                 volum_confirma = self.volume_confirmation(x)

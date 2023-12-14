@@ -66,18 +66,21 @@ class LIVE_MONITORING(SQUEEZE):
         streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn]  
         # print(streams)
         candidate_list = []
-        wait_time = self.kline_waiter()
-        print(f"wait_time: {wait_time}")
-        await asyncio.sleep(wait_time)
-        print('start')
+
 
         try:
             while True:
+                print('hello')
+                wait_time = self.kline_waiter()
+                print(f"wait_time: {wait_time}")
+                await asyncio.sleep(wait_time)
+                print('start')
                 ws = None            
                 process_list = []
                 process_bufer_set = set()  
                 last_update_time = time.time()
-                counter = 0             
+                counter = 0    
+                some_abracadabra_condition_list = []         
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with session.ws_connect(url) as ws:
@@ -111,7 +114,7 @@ class LIVE_MONITORING(SQUEEZE):
                                             process_bufer_set.add(symbol)   
                                             # print(f"{symbol}:  {last_close_price}")    
                                             counter += 1 
-                                            # print(f"just_counter: {counter}")                                                  
+                                            print(f"just_counter: {counter}")                                                  
 
                                         if len(process_bufer_set) == len(streams):
                                             # print(process_list)
@@ -160,6 +163,22 @@ class LIVE_MONITORING(SQUEEZE):
                                             process_list = []
                                             process_bufer_set = set()
 
+                                        else:
+                                            some_abracadabra_condition_list.append(counter)
+                                            if (len(some_abracadabra_condition_list) >5) and (all(element == some_abracadabra_condition_list[-1] for element in some_abracadabra_condition_list[-5:])):
+                                                
+                                                coins_in_squeezeOn = [coin for coin in coins_in_squeezeOn if coin['symbol'] in process_bufer_set]
+
+                                                # Обновление streams
+                                                streams = [f"{coin['symbol'].lower()}@kline_1s" for coin in coins_in_squeezeOn]
+
+                                                
+
+                                                # Переподключение
+                                                await ws.close()
+                                                # ws = await session.ws_connect(url)
+                                                # await ws.send_json(subscribe_request)
+
                                         if candidate_list:
                                             return
                                         # await asyncio.sleep(1)
@@ -168,7 +187,8 @@ class LIVE_MONITORING(SQUEEZE):
                                         print(f"177str:  {ex}")
                                         await asyncio.sleep(1)
                                         continue
-                            # await asyncio.sleep(10)
+                            await asyncio.sleep(1)
+                            continue
 
                 except Exception as ex:
                     print(f"183str:  {ex}")
