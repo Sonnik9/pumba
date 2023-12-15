@@ -25,25 +25,7 @@ class LIVE_MONITORING(SQUEEZE):
         # elif time_frame == 'd':
         #     wait_time = ((86400*kline_time) - (time.time()%86400) + 1)
 
-        return int(wait_time)  
-
-
-    def precessionss(self, symbol, slice_candles=5):
-        coins_in_squeezeOn_dict = {}
-        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
-        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-        timeframe = '1m'
-        limit = 10
-        m1_data = self.get_ccxtBinance_klines(symbol, timeframe, limit)  
-        mean_close_1m_5 = m1_data['Close'].iloc[-slice_candles:].mean()    
-        
-        if mean_close_1m_5 != 0:
-            coins_in_squeezeOn_dict = {
-                "symbol": symbol, 
-                "mean_close_1m_5": mean_close_1m_5,                       
-            }            
-
-        return coins_in_squeezeOn_dict
+        return int(wait_time)
     
     def volume_confirmation(self, symbol, slice_candles=7):
 
@@ -63,24 +45,24 @@ class LIVE_MONITORING(SQUEEZE):
     async def price_volume_monitoring(self, coins_in_squeezeOn_arg):
         url = 'wss://stream.binance.com:9443/stream?streams='  
         coins_in_squeezeOn = coins_in_squeezeOn_arg.copy()
-        streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn]  
-        # print(streams)
-        candidate_list = []
-
+        pump_candidate_list = []
 
         try:
             while True:
                 print('hello')
-                wait_time = self.kline_waiter()
-                print(f"wait_time: {wait_time}")
-                await asyncio.sleep(wait_time)
-                print('start')
-                ws = None            
+                ws = None   
+                first_visit_flag = True         
                 process_list = []
                 process_bufer_set = set()  
                 last_update_time = time.time()
                 counter = 0    
-                some_abracadabra_condition_list = []         
+                accum_counter_list = []   
+                wait_time = self.kline_waiter()
+                print(f"wait_time: {wait_time}")
+                await asyncio.sleep(wait_time)
+                print('start')
+                streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
+
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with session.ws_connect(url) as ws:
@@ -98,7 +80,7 @@ class LIVE_MONITORING(SQUEEZE):
 
                             async for msg in ws:
                                 if ws.closed:
-                                    break  # Проверяем, закрыт ли сокет
+                                    break  
 
                                 if msg.type == aiohttp.WSMsgType.TEXT:
                                     try:
@@ -107,16 +89,19 @@ class LIVE_MONITORING(SQUEEZE):
                                         symbol = data.get('data',{}).get('s')    
                                         if symbol not in process_bufer_set:
                                             last_close_price = float(data.get('data',{}).get('k',{}).get('c'))                                        
-                                            last_volume = float(data.get('data',{}).get('k',{}).get('v')) 
-                                            # print(f"last_close_price: {last_close_price}") 
-                                            # print(f"last_volume: {last_volume}")
-                                            process_list.append({"symbol": symbol, "last_close_price": last_close_price, "last_volume": last_volume})
+                                            process_list.append({"symbol": symbol, "last_close_price": last_close_price})
                                             process_bufer_set.add(symbol)   
                                             # print(f"{symbol}:  {last_close_price}")    
                                             counter += 1 
-                                            print(f"just_counter: {counter}")                                                  
+                                            print(f"just_counter: {counter}")                                          
 
-                                        if len(process_bufer_set) == len(streams):
+                                        if len(process_bufer_set) == len(coins_in_squeezeOn):
+                                            if first_visit_flag: 
+                                                coins_in_squeezeOn = [{"symbol": x["symbol"], "mean_close_1m_5": x["last_close_price"]} for x in process_list]  
+                                                process_bufer_set = set()
+                                                process_list = []
+                                                first_visit_flag = False
+                                                continue
                                             # print(process_list)
                                             # print(coins_in_squeezeOn)
                                             coins_in_squeezeOn_bufer = []
@@ -129,20 +114,21 @@ class LIVE_MONITORING(SQUEEZE):
                                                                 print(f'mean_close_1m_5: {x["mean_close_1m_5"]}')
                                                                 print(f'last_close_price: {y["last_close_price"]}')
                                                                 print(1 + (self.PRICE_KLINE_1M_PERCENT_CHANGE/100))
-                                                                candidate_list.append((x["symbol"], 1))
+                                                                pump_candidate_list.append((x["symbol"], 1))
 
                                                             elif y["last_close_price"] / x["mean_close_1m_5"] <= 1 - (self.PRICE_KLINE_1M_PERCENT_CHANGE/100):
                                                                 print(f'symbol: {x["symbol"]}')
                                                                 print(f'mean_close_1m_5: {x["mean_close_1m_5"]}')
                                                                 print(f'last_close_price: {y["last_close_price"]}')
                                                                 print(1 + (self.PRICE_KLINE_1M_PERCENT_CHANGE/100))                                
-                                                                candidate_list.append((x["symbol"], -1))
+                                                                pump_candidate_list.append((x["symbol"], -1))
                                                             
                                                             else:
-                                                                print(f'symbol: {x["symbol"]}')
-                                                                print(f'mean_close_1m_5: {x["mean_close_1m_5"]}')
-                                                                print(f'last_close_price: {y["last_close_price"]}')
-                                                                print('not pump-dump')
+                                                                pass
+                                                                # print(f'symbol: {x["symbol"]}')
+                                                                # print(f'mean_close_1m_5: {x["mean_close_1m_5"]}')
+                                                                # print(f'last_close_price: {y["last_close_price"]}')
+                                                                # print('not pump-dump')
                                                             coins_in_squeezeOn_bufer.append({
                                                                 "symbol": x["symbol"], 
                                                                 "mean_close_1m_5": y["last_close_price"],                          
@@ -164,22 +150,15 @@ class LIVE_MONITORING(SQUEEZE):
                                             process_bufer_set = set()
 
                                         else:
-                                            some_abracadabra_condition_list.append(counter)
-                                            if (len(some_abracadabra_condition_list) >5) and (all(element == some_abracadabra_condition_list[-1] for element in some_abracadabra_condition_list[-5:])):
+                                            accum_counter_list.append(counter)
+                                            if (len(accum_counter_list) >5) and (all(element == accum_counter_list[-1] for element in accum_counter_list[-5:])):
                                                 
                                                 coins_in_squeezeOn = [coin for coin in coins_in_squeezeOn if coin['symbol'] in process_bufer_set]
-
-                                                # Обновление streams
-                                                streams = [f"{coin['symbol'].lower()}@kline_1s" for coin in coins_in_squeezeOn]
-
-                                                
-
-                                                # Переподключение
+                                                streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
+                                                accum_counter_list = []
                                                 await ws.close()
-                                                # ws = await session.ws_connect(url)
-                                                # await ws.send_json(subscribe_request)
 
-                                        if candidate_list:
+                                        if pump_candidate_list:
                                             return
                                         # await asyncio.sleep(1)
 
@@ -201,7 +180,7 @@ class LIVE_MONITORING(SQUEEZE):
                 await ws.close()
             await asyncio.sleep(1)  
 
-            return candidate_list
+            return pump_candidate_list
         
 
 # monitorr = LIVE_MONITORING()

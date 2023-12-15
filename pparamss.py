@@ -85,11 +85,11 @@ class FILTER_SET(TIME_TEMPLATES):
 class INDICATRS_SETTINGS(FILTER_SET):
     def __init__(self) -> None:
         super().__init__()
-        self.BB_stddev_MULTIPLITER = 2.5
+        self.BB_stddev_MULTIPLITER = 3.0
         self.KC_stddev_MULTIPLITER = 1.5
 
         # websocket params:
-        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # %CHANGING/1min
+        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.4 # %CHANGING/1min
         self.VOLUME_KLINE_1M_MULTIPLITER = 2.0 # volum multipliter/1min
 
     
