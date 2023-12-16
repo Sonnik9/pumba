@@ -22,6 +22,33 @@ class GETT_API_CCXT(CONFIG):
 
         return all_tickers
 
+    def get_balance(self):
+       
+        current_balance = None 
+        url = self.URL_PATTERN_DICT['balance_url']
+        # print(url)
+        params = {}
+        
+        if not self.test_flag:
+            params['recvWindow'] = 5000
+            params = self.get_signature(params)
+            current_balance = self.HTTP_request(url, method=method, headers=self.header, params=params)
+            
+            if self.market == 'spot':                
+                current_balance = dict(current_balance)                
+                current_balanceE = current_balance['balances']
+                current_balance = [(x['free'], x['locked']) for x in current_balanceE if x['asset'] == 'USDT'][0]          
+            if self.market == 'futures':                
+                current_balanceE = list(current_balance)
+                current_balance = [(x['balance'], x['crossUnPnl']) for x in current_balanceE if x['asset'] == 'USDT'][0]
+        else:
+            params = self.get_signature(params)
+            current_balance = self.HTTP_request(url, method=method, headers=self.header, params=params)
+            current_balance = float([x['balance'] for x in current_balance if x['asset'] == 'USDT'][0])  
+            # print(current_balance)
+            
+        return current_balance
+
     def get_ccxtBinance_klines(self, symbol, timeframe, limit):
         try:
             klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)

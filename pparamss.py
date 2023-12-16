@@ -89,7 +89,7 @@ class INDICATRS_SETTINGS(FILTER_SET):
         self.KC_stddev_MULTIPLITER = 1.5
 
         # websocket params:
-        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.4 # %CHANGING/1min
+        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.3 # %CHANGING/1min
         self.VOLUME_KLINE_1M_MULTIPLITER = 2.0 # volum multipliter/1min
 
     
