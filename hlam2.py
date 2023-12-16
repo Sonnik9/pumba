@@ -578,3 +578,139 @@
     #             except Exception as ex:
     #                 print(f"str 56: {ex}")
     #                 continue    
+
+
+
+
+
+
+# import websocket_module
+# import json
+
+# def on_message(ws, message):
+#     try:
+#         data = json.loads(message)
+#         if 'o' in data:  # Check if it's an open interest update
+#             open_interest = float(data['o'])
+#             print(f'Binance Open Interest: {open_interest}')
+#     except json.JSONDecodeError as e:
+#         print(f'Error decoding JSON: {e}')
+
+# def on_error(ws, error):
+#     print(f'Error: {error}')
+
+# def on_close(ws, close_status_code, close_msg):
+#     print('Closed connection')
+
+# def on_open(ws, *args):
+#     # Subscribe to the open interest stream for BTCUSDT
+#     symbol = 'btcusdt'
+#     ws.send(json.dumps({'method': 'SUBSCRIBE', 'params': [f'{symbol}@openInterest'], 'id': 1}))
+
+# if __name__ == "__main__":
+#     # Binance WebSocket URL
+#     socket_url = 'wss://stream.binance.com:9443/ws/btcusdt@openInterest'
+
+#     # Create a WebSocket connection
+#     ws = websocket_module.WebSocketApp(socket_url, on_message=on_message, on_error=on_error, on_close=on_close)
+#     ws.on_open = on_open
+
+#     # Run the WebSocket connection
+#     ws.run_forever()
+
+
+
+# from monitoringg import LIVE_MONITORING
+# import asyncio
+# import logging, os, inspect
+# import os, pandas
+# import json
+# import time
+# import random
+# import asyncio
+# import aiohttp
+
+# logging.basicConfig(filename='main_config_log.log', level=logging.ERROR)
+# current_file = os.path.basename(__file__)
+
+# class MAIN_CONTROLLER(LIVE_MONITORING):
+
+#     def __init__(self) -> None:
+#         super().__init__()
+
+#     async def runn(self):
+#         start_time = time.time()
+#         while True:            
+#             top_coins = self.assets_filters_1()
+#             print(f"len(top_coins): {len(top_coins)}")
+#             # print(top_coins[0:10])            
+#             coins_in_squeezeOn = []           
+#             # coins_in_squeezeOff = []
+#             candidate_coins = []
+#             confirm_pump_candidates_coins = []
+#             confirm_dump_candidates_coins = []
+#             nonConfirm_candidate_coins = []
+#             for symbol in top_coins:
+#                 m15_data = None                
+#                 timeframe = '15m'
+#                 limit = 100
+#                 try:
+#                     m15_data = self.get_ccxtBinance_klines(symbol, timeframe, limit)        
+#                     m15_data = self.squeeze_unMomentum(m15_data)
+#                     if m15_data['squeeze_on'].iloc[-1]:
+#                         coins_in_squeezeOn.append({"symbol": symbol, "prev_close_1m": ""})
+#                 except:
+#                     continue               
+#             m_sq = [x["symbol"] for x in coins_in_squeezeOn]
+#             print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
+#             print("Монеты в сжатии:", m_sq) 
+#             finish_time = time.time() - start_time  
+#             print(f"Время поиска:  {round(finish_time/60, 2)} мин")       
+
+#             candidate_coins = await self.price_volume_monitoring(coins_in_squeezeOn)
+#             print("Кандидаты в ПАМП/ДАМП:", candidate_coins)            
+#             for x, defender in candidate_coins:
+#                 volum_confirma = self.volume_confirmation(x)
+#                 if volum_confirma and defender==1:
+#                     confirm_pump_candidates_coins.append(x)
+#                 elif volum_confirma and defender==-1:
+#                     confirm_dump_candidates_coins.append(x)
+#                 else:
+#                     nonConfirm_candidate_coins.append(x)
+                
+#             print("Подтвержденные кандидаты в ПАМП:", confirm_pump_candidates_coins)
+#             print("Подтвержденные кандидаты в ДАМП:", confirm_dump_candidates_coins)
+#             print("Неподтвержденные кандидаты в ДАМП:", nonConfirm_candidate_coins)
+
+#             break
+
+
+                    # for pairs, defender, cur_per_change, curTimee in candidate_coins:
+                    #     volum_confirma = self.volume_confirmation(pairs)
+                    #     if volum_confirma and defender==1:
+                    #         confirm_pump_candidates_coins.append(pairs)
+                    #     elif volum_confirma and defender==-1:
+                    #         confirm_dump_candidates_coins.append(pairs)
+                    #     else:
+                    #         nonConfirm_candidate_coins.append(pairs)
+                        
+                    # print("Подтвержденные кандидаты в ПАМП:", confirm_pump_candidates_coins)
+                    # print("Подтвержденные кандидаты в ДАМП:", confirm_dump_candidates_coins)
+                    # print("Неподтвержденные кандидаты в ПАМП/ДАМП:", nonConfirm_candidate_coins)  
+
+    
+
+
+# monitorr = LIVE_MONITORING()
+# stream = [{'symbol': 'BTCUSDT', 'prev_close_1m': 42846.04, 'mean_volume_1m_5': 35.75713399999999}, {'symbol': 'LTCUSDT', 'prev_close_1m': 72.46, 'mean_volume_1m_5': 138.12963200000002}, {'symbol': 'MKRUSDT', 'prev_close_1m': 1355, 'mean_volume_1m_5': 487.436024}, {'symbol': 'XMRUSDT', 'prev_close_1m': 167.2, 'mean_volume_1m_5': 405.673152}, {'symbol': 'MATICUSDT', 'prev_close_1m': 0.8695, 'mean_volume_1m_5': 5053.091552}]
+# async def runn():
+#     pump_candidates_coins, dump_candidates_coins = await monitorr.price_volume_monitoring(stream)
+#     print("Кандидаты в ПАМП:", pump_candidates_coins)
+#     print("Кандидаты в ДАМП:", dump_candidates_coins)
+#     total_candidats = pump_candidates_coins + dump_candidates_coins
+#     for x in total_candidats:
+#         volum_confirma = monitorr.volume_confirmation(x)
+#         print(f"{x}: volum_confirma: {volum_confirma}")
+
+# if __name__=="__main__":
+#     asyncio.run(runn())

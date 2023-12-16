@@ -1,48 +1,18 @@
-from squeeze_detecting import SQUEEZE
-from API_YF.get_yf_data import GETT_HISTORICAL_DATA
+from TECHNIQUES.techniques_py import TECHNIQUESS
+from UTILS.utils_py import UTILSS
 import asyncio
 import aiohttp
 import json
-from datetime import datetime, timedelta
 import time
 import random
 import logging
 import os
 import inspect
 
-class LIVE_MONITORING(SQUEEZE):
+class LIVE_MONITORING(TECHNIQUESS, UTILSS):
 
     def __init__(self) -> None:
-        super().__init__()
-
-    def kline_waiter(self, kline_time=1, time_frame='m'):        
-        wait_time = 0  
-
-        if time_frame == 'm':
-            wait_time = ((60*kline_time) - (time.time()%60) + 1)
-        # elif time_frame == 'h':
-        #     wait_time = ((3600*kline_time) - (time.time()%3600) + 1)
-        # elif time_frame == 'd':
-        #     wait_time = ((86400*kline_time) - (time.time()%86400) + 1)
-
-        return int(wait_time)
-    
-    def volume_confirmation(self, symbol, slice_candles=7):
-
-        volume_confirmation_flag = False
-        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
-        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-        timeframe = '1m'
-        limit = 10
-        m1_data = self.get_ccxtBinance_klines(symbol, timeframe, limit)    
-        mean_volume_1m__7__3 = m1_data['Volume'].iloc[-slice_candles:-2].mean()   
-        mean_volume_1m__7__2 = m1_data['Volume'].iloc[-slice_candles:-1].mean()
-        volume_1m__2 = m1_data['Volume'].iloc[-2]
-        volume_1m__1 = m1_data['Volume'].iloc[-1]
-        if mean_volume_1m__7__2 != 0 and volume_1m__1 != 0: 
-            volume_confirmation_flag = (volume_1m__1 / mean_volume_1m__7__2 >= self.VOLUME_KLINE_1M_MULTIPLITER) or (volume_1m__2 / mean_volume_1m__7__3 >= self.VOLUME_KLINE_1M_MULTIPLITER)
-
-        return volume_confirmation_flag            
+        super().__init__()     
 
     async def price_volume_monitoring(self, coins_in_squeezeOn_arg):
         url = 'wss://stream.binance.com:9443/stream?streams='  
@@ -58,11 +28,11 @@ class LIVE_MONITORING(SQUEEZE):
                 process_bufer_set = set()  
                 last_update_time = time.time()
                 counter = 0    
-                accum_counter_list = []   
-                wait_time = self.kline_waiter()
+                accum_counter_list = [] 
+                curDataTime = ''  
+                wait_time = await self.kline_waiter()
                 print(f"wait_time: {wait_time}")
-                await asyncio.sleep(wait_time)
-                print('start')
+                await asyncio.sleep(wait_time)                
                 streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
 
                 try:
@@ -110,36 +80,36 @@ class LIVE_MONITORING(SQUEEZE):
                                             coins_in_squeezeOn_bufer = []
                                             for i, x in enumerate(coins_in_squeezeOn):
                                                 for y in process_list:
-                                                    if x["symbol"] == y["symbol"]:
-                                                        if x["prev_close_1m"] != 0:
-                                                            if y["last_close_price"] / x["prev_close_1m"] >= 1 + (self.PRICE_KLINE_1M_PERCENT_CHANGE/100):
-                                                                print(f'symbol: {x["symbol"]}')
-                                                                print(f'prev_close_1m: {x["prev_close_1m"]}')
-                                                                print(f'last_close_price: {y["last_close_price"]}')
-                                                                print(1 + (self.PRICE_KLINE_1M_PERCENT_CHANGE/100))
-                                                                pump_candidate_list.append((x["symbol"], 1))
+                                                    if (x["symbol"] == y["symbol"]) and (x["prev_close_1m"] != 0) and (y["last_close_price"] - x["prev_close_1m"] != 0):                                                    
+                                                        cur_per_change = ((y["last_close_price"] - x["prev_close_1m"]) / x["prev_close_1m"])* 100
+                                                        # print(cur_per_change)
 
-                                                            elif y["last_close_price"] / x["prev_close_1m"] <= 1 - (self.PRICE_KLINE_1M_PERCENT_CHANGE/100):
-                                                                print(f'symbol: {x["symbol"]}')
-                                                                print(f'prev_close_1m: {x["prev_close_1m"]}')
-                                                                print(f'last_close_price: {y["last_close_price"]}')
-                                                                print(1 + (self.PRICE_KLINE_1M_PERCENT_CHANGE/100))                                
-                                                                pump_candidate_list.append((x["symbol"], -1))
+                                                        if cur_per_change >= self.PRICE_KLINE_1M_PERCENT_CHANGE:
+                                                            curDataTime = await self.cur_dateTime()
+                                                            # print(f'symbol: {x["symbol"]}')
+                                                            # print(f'prev_close_1m: {x["prev_close_1m"]}')
+                                                            # print(f'last_close_price: {y["last_close_price"]}')
                                                             
-                                                            else:
-                                                                pass
-                                                                # print(f'symbol: {x["symbol"]}')
-                                                                # print(f'prev_close_1m: {x["prev_close_1m"]}')
-                                                                # print(f'last_close_price: {y["last_close_price"]}')
-                                                                # print('not pump-dump')
-                                                            coins_in_squeezeOn_bufer.append({
-                                                                "symbol": x["symbol"], 
-                                                                "prev_close_1m": y["last_close_price"],                          
-                                                                }
-                                                            )
+                                                            pump_candidate_list.append((x["symbol"], 'PUMP', str(cur_per_change) + ' ' + '%', curDataTime))
+
+                                                        elif cur_per_change <= -1*self.PRICE_KLINE_1M_PERCENT_CHANGE:
+                                                            curDataTime = await self.cur_dateTime()
+                                                            # print(f'symbol: {x["symbol"]}')
+                                                            # print(f'prev_close_1m: {x["prev_close_1m"]}')
+                                                            # print(f'last_close_price: {y["last_close_price"]}')
+                                                                                          
+                                                            pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))
+                                                        
+                                                        else:
+                                                            pass
+                                                        coins_in_squeezeOn_bufer.append({
+                                                            "symbol": x["symbol"], 
+                                                            "prev_close_1m": y["last_close_price"],                          
+                                                            }
+                                                        )
                                                         break
                                                 current_time = time.time()
-                                                if (current_time - last_update_time)/60 >= 1 and (i == len(coins_in_squeezeOn) - 1):
+                                                if (current_time - last_update_time)/self.INTERVAL_CLOSEPRICE_MONITORING >= 1 and (i == len(coins_in_squeezeOn) - 1):
                                                     last_update_time = current_time
                                                     for j, z in enumerate(coins_in_squeezeOn):
                                                         for bf in coins_in_squeezeOn_bufer:
@@ -157,8 +127,7 @@ class LIVE_MONITORING(SQUEEZE):
                                             if (len(accum_counter_list) >5) and (all(element == accum_counter_list[-1] for element in accum_counter_list[-5:])):
                                                 
                                                 coins_in_squeezeOn = [coin for coin in coins_in_squeezeOn if coin['symbol'] in process_bufer_set]
-                                                streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
-                                                accum_counter_list = []
+                                                streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn]                                           
                                                 await ws.close()
 
                                         if pump_candidate_list:
@@ -186,18 +155,5 @@ class LIVE_MONITORING(SQUEEZE):
             return pump_candidate_list
         
 
-# monitorr = LIVE_MONITORING()
-# stream = [{'symbol': 'BTCUSDT', 'prev_close_1m': 42846.04, 'mean_volume_1m_5': 35.75713399999999}, {'symbol': 'LTCUSDT', 'prev_close_1m': 72.46, 'mean_volume_1m_5': 138.12963200000002}, {'symbol': 'MKRUSDT', 'prev_close_1m': 1355, 'mean_volume_1m_5': 487.436024}, {'symbol': 'XMRUSDT', 'prev_close_1m': 167.2, 'mean_volume_1m_5': 405.673152}, {'symbol': 'MATICUSDT', 'prev_close_1m': 0.8695, 'mean_volume_1m_5': 5053.091552}]
-# async def runn():
-#     pump_candidates_coins, dump_candidates_coins = await monitorr.price_volume_monitoring(stream)
-#     print("Кандидаты в ПАМП:", pump_candidates_coins)
-#     print("Кандидаты в ДАМП:", dump_candidates_coins)
-#     total_candidats = pump_candidates_coins + dump_candidates_coins
-#     for x in total_candidats:
-#         volum_confirma = monitorr.volume_confirmation(x)
-#         print(f"{x}: volum_confirma: {volum_confirma}")
-
-# if __name__=="__main__":
-#     asyncio.run(runn())
 
 # python monitoringg.py

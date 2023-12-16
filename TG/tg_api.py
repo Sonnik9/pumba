@@ -1,16 +1,44 @@
-# # python -m TG.tg_main
+from monitoringg import LIVE_MONITORING
 import telebot
 from telebot import types
 from config import CONFIG
 import time
 from datetime import datetime
 import asyncio
-from main_control import MAIN_CONTROLLER
 
-class TG_CONNECTOR(MAIN_CONTROLLER):
+# rocket_emoji = "\U0001F680"
+# lightning_emoji = "\u26A1"
+# clock_emoji = "\u231A"
+# film_emoji = "\U0001F39E"
+# percent_emoji = "%"
+# repeat_emoji = "\U0001F501"
+
+# 💰 (U+1F4B0)
+# 💵 (U+1F4B5)
+# 💲 (U+1F4B2)
+
+# ✅ (U+2705)
+# ☑️ (U+2611)
+# ✔️ (U+2714)
+
+money_emoji = "💰"
+rocket_emoji = "🚀"
+lightning_emoji =  "⚡"
+clock_emoji = "⌚"
+film_emoji = "📼"
+percent_emoji = "📶"
+repeat_emoji = "🔁"
+upper_trigon_emoji = "🔼"
+lower_trigon_emoji = "🔽"
+confirm_emoji = "✅"
+signal_number_emoji = "🔢"
+signal_number_emoji = "№"
+link_emoji = "🔗"
+
+class TG_CONNECTOR(LIVE_MONITORING):
     def __init__(self):
         super().__init__()
-        self.bot = telebot.TeleBot(CONFIG().tg_api_token)
+        self.bot = telebot.TeleBot(self.tg_api_token)
         self.menu_markup = self.create_menu()
         self.reserved_frathes_list = ["SETTINGS", "GO", "BALANCE", "RESTART", "1", "2"]        
         self.settings_flag = False
@@ -33,7 +61,7 @@ class TG_CONNECTOR(MAIN_CONTROLLER):
                 return message.text
             except:
                 time.sleep(2 + i*decimal)        
-        return None    
+        return None
     
 class TG_ASSISTENT(TG_CONNECTOR):
     def __init__(self):
@@ -73,66 +101,67 @@ class TG_ASSISTENT(TG_CONNECTOR):
         def go(message):
             response_message = "Please wait. It may take a several time..."
             message.text = self.connector_func(bot, message, response_message)  
-           
-            start_time = time.time()
-            while True:  
-                response_dict = {}          
-                top_coins = self.assets_filters_1()
-                print(f"len(top_coins): {len(top_coins)}")
-                # print(top_coins[0:10])            
-                coins_in_squeezeOn = []           
-                # coins_in_squeezeOff = []
-                candidate_coins = []
-                confirm_pump_candidates_coins = []
-                confirm_dump_candidates_coins = []
-                nonConfirm_candidate_coins = []
-                for symbol in top_coins:
-                    m15_data = None                
-                    timeframe = '15m'
-                    limit = 100
-                    try:
-                        m15_data = self.get_ccxtBinance_klines(symbol, timeframe, limit)        
-                        m15_data = self.squeeze_unMomentum(m15_data)
-                        if m15_data['squeeze_on'].iloc[-1]:
-                            coins_in_squeezeOn.append({"symbol": symbol, "prev_close_1m": ""})
-                    except:
-                        continue               
-                m_sq = [x["symbol"] for x in coins_in_squeezeOn]
-                print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
-                print("Монеты в сжатии:", m_sq) 
-                finish_time = time.time() - start_time  
-                print(f"Время поиска:  {round(finish_time/60, 2)} мин")       
 
-                candidate_coins = asyncio.run(self.price_volume_monitoring(coins_in_squeezeOn))
-                print("Кандидаты в ПАМП/ДАМП:", candidate_coins)            
-                for x, defender in candidate_coins:
-                    volum_confirma = self.volume_confirmation(x)
-                    if volum_confirma and defender==1:
-                        confirm_pump_candidates_coins.append(x)
-                    elif volum_confirma and defender==-1:
-                        confirm_dump_candidates_coins.append(x)
-                    else:
-                        nonConfirm_candidate_coins.append(x)
-                    
-                print("Подтвержденные кандидаты в ПАМП:", confirm_pump_candidates_coins)
-                print("Подтвержденные кандидаты в ДАМП:", confirm_dump_candidates_coins)
-                print("Неподтвержденные кандидаты в ДАМП:", nonConfirm_candidate_coins)
+            async def launch():
+                start_time = time.time()
+                date_of_the_month_start = await self.date_of_the_month()
+                signal_number_acumm_list = []
+                while True:  
+                    response_textt = ''''''         
+                    top_coins = await self.assets_filters_1()
+                    print(f"len(top_coins): {len(top_coins)}")
+                    # print(top_coins[0:10])            
+                    coins_in_squeezeOn = []                    
+                    candidate_coins = []                  
+                                       
+                    for symbol in top_coins:
+                        m15_data = None                
+                        timeframe = '15m'
+                        limit = 100
+                        try:
+                            m15_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)        
+                            m15_data = await self.squeeze_unMomentum(m15_data)
+                            if m15_data['squeeze_on'].iloc[-1]:
+                                coins_in_squeezeOn.append({"symbol": symbol, "prev_close_1m": ""})
+                        except:
+                            continue               
+                    just_squeeze_symbol_list = [x["symbol"] for x in coins_in_squeezeOn]                   
+                    print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
+                    print("Монеты в сжатии:", just_squeeze_symbol_list)                 
 
-                response_dict["Confirmed PAMP Candidates"] = confirm_pump_candidates_coins
-                response_dict["Confirmed DAMP Candidates"] = confirm_dump_candidates_coins
-                response_dict["Unconfirmed PAMP Candidates"] = nonConfirm_candidate_coins
+                    candidate_coins = await self.price_volume_monitoring(coins_in_squeezeOn)
 
-                message.text = self.connector_func(bot, message, response_dict) 
+                    just_candidate_symbol_list = [x[0] for x in candidate_coins]
+                    signal_number_acumm_list += just_candidate_symbol_list
+                    print("Кандидаты в ПАМП/ДАМП:", just_candidate_symbol_list)
+                    date_of_the_month_current = await self.date_of_the_month()
+                    if date_of_the_month_current != date_of_the_month_start:
+                        signal_number_acumm_list = []
+                        date_of_the_month_start = date_of_the_month_current
 
-                break
-                 
-            
+                    finish_time = time.time() - start_time  
+                    duration = round(finish_time/3600, 2)
+                    start_time = time.time()
+                       
+                    for pairs, defender, cur_per_change, curTimee in candidate_coins:
+                        volum_confirma = await self.volume_confirmation(pairs)
+                        signal_number = sum(1 for x in signal_number_acumm_list if x == pairs)
+                        link = f"https://www.coinglass.com/tv/Binance_{pairs}"
+                        if defender == "PUMP":
+                            defini = upper_trigon_emoji
+                        else:
+                            defini = lower_trigon_emoji
+                        response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} --- {pairs}\n{clock_emoji} --- {curTimee}\n{defini} --- {defender}\n{percent_emoji} --- {cur_per_change}\n{confirm_emoji} (volum) --- {str(volum_confirma)}\n{film_emoji} --- {duration} h\n{signal_number_emoji} --- {signal_number}\n{link_emoji} --- {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
+                    message.text = self.connector_func(bot, message, response_textt)
+                    # break
+
+            asyncio.run(launch())  
 
 
-        # @bot.message_handler(func=lambda message: message.text not in self.reserved_frathes_list)
-        # def exceptions_input(message):
-        #     response_message = f"Try again and enter a valid option."
-        #     message.text = self.connector_func(bot, message, response_message)                 
+        @bot.message_handler(func=lambda message: message.text not in self.reserved_frathes_list)
+        def exceptions_input(message):
+            response_message = f"Try again and enter a valid option."
+            message.text = self.connector_func(bot, message, response_message)                 
 
         bot.polling()
 

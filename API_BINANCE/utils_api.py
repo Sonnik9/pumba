@@ -7,7 +7,7 @@ class UTILS_APII(GETT_API_CCXT):
         super().__init__()
 
 # ///////////////////////////////////////////////////////////////////////////////////////        
-    def assets_filters_2(self):
+    async def assets_filters_2(self):
         top_pairs = []
         all_tickers = []
         
@@ -32,7 +32,7 @@ class UTILS_APII(GETT_API_CCXT):
 # ///////////////////////////////////////////////////////////////////////////////////
 
 # ///////////////////////////////////////////////////////////////////////////////////////        
-    def assets_filters_1(self):
+    async def assets_filters_1(self):
         top_pairs = []
         all_tickers = []
         

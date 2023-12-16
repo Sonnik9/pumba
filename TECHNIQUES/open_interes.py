@@ -24,39 +24,6 @@
 #     print(f"Ошибка при запросе данных: {response.status_code}, {response.text}")
 
 
-import websocket_module
-import json
-
-def on_message(ws, message):
-    try:
-        data = json.loads(message)
-        if 'o' in data:  # Check if it's an open interest update
-            open_interest = float(data['o'])
-            print(f'Binance Open Interest: {open_interest}')
-    except json.JSONDecodeError as e:
-        print(f'Error decoding JSON: {e}')
-
-def on_error(ws, error):
-    print(f'Error: {error}')
-
-def on_close(ws, close_status_code, close_msg):
-    print('Closed connection')
-
-def on_open(ws, *args):
-    # Subscribe to the open interest stream for BTCUSDT
-    symbol = 'btcusdt'
-    ws.send(json.dumps({'method': 'SUBSCRIBE', 'params': [f'{symbol}@openInterest'], 'id': 1}))
-
-if __name__ == "__main__":
-    # Binance WebSocket URL
-    socket_url = 'wss://stream.binance.com:9443/ws/btcusdt@openInterest'
-
-    # Create a WebSocket connection
-    ws = websocket_module.WebSocketApp(socket_url, on_message=on_message, on_error=on_error, on_close=on_close)
-    ws.on_open = on_open
-
-    # Run the WebSocket connection
-    ws.run_forever()
 
 
 

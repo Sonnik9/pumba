@@ -49,7 +49,7 @@ class GETT_API_CCXT(CONFIG):
             
         return current_balance
 
-    def get_ccxtBinance_klines(self, symbol, timeframe, limit):
+    async def get_ccxtBinance_klines(self, symbol, timeframe, limit):
         try:
             klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
             data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
