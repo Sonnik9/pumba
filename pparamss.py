@@ -10,8 +10,8 @@ class BASIC_PARAMETRS():
         self.market = 'futures'
         self.test_flag = True
         self.test_flag = False
-        self.DIVERCIFICATION_NUMDER = 15
-        self.DEPO = 20
+        # self.DIVERCIFICATION_NUMDER = 15
+        # self.DEPO = 20
 
     def init_api_key(self):
         self.tg_api_token = os.getenv("TG_API_TOKEN", "")
@@ -65,7 +65,7 @@ class TIME_TEMPLATES(URL_TEMPLATES):
         self.break_time = {}
         self.break_time["from"] = 3
         self.break_time["to"] = 4
-        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
+        self.KLINE_TIME, self.TIME_FRAME = 15, 'm'
         self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
 
 
@@ -85,15 +85,14 @@ class FILTER_SET(TIME_TEMPLATES):
 class INDICATRS_SETTINGS(FILTER_SET):
     def __init__(self) -> None:
         super().__init__()
-        self.BB_stddev_MULTIPLITER = 2.5
+        self.BB_stddev_MULTIPLITER = 2.9
         self.KC_stddev_MULTIPLITER = 1.5
 
         # websocket params:
-        self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.2 # % CHANGING/1min
-        self.VOLUME_KLINE_1M_MULTIPLITER = 2.0 # volum multipliter/1min
-        self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec
-
-    
+        # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
+        self.PRICE_KLINE_1M_MULTIPLITER = 1.9
+        self.VOLUME_KLINE_1M_MULTIPLITER = 3.9 # volum multipliter/1min
+        self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec    
 
 class INIT_PARAMS(INDICATRS_SETTINGS):
     def __init__(self) -> None:
