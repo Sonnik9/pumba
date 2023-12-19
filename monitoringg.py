@@ -12,12 +12,9 @@ import inspect
 class LIVE_MONITORING(TECHNIQUESS, UTILSS):
 
     def __init__(self) -> None:
-        super().__init__()   
-        self.lock_candidate_coins = asyncio.Lock() 
-        self.websocket_returned_flag = False 
-        self.stop_flag = False
-        self.pump_candidate_list = []
-        self.pump_candidate_busy_list = []
+        super().__init__() 
+        self.pump_candidate_busy_list = []  
+
 
     async def websocket_precession(self, symbol):
         precession_upgraded_data = {}
@@ -65,9 +62,9 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
                 counter = 0    
                 accum_counter_list = [] 
                 curDataTime = ''  
-                wait_time = await self.kline_waiter()
-                print(f"wait_time: {wait_time}")
-                await asyncio.sleep(wait_time)                
+                # wait_time = await self.kline_waiter()
+                # print(f"wait_time: {wait_time}")
+                # await asyncio.sleep(wait_time)                
                 streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
 
                 try:
@@ -87,7 +84,7 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
 
                             async for msg in ws:
                                 if ws.closed:
-                                    break  
+                                    break                  
 
                                 if msg.type == aiohttp.WSMsgType.TEXT:
                                     try:
@@ -123,7 +120,8 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
                                             for i, x in enumerate(coins_in_squeezeOn):
                                                 for y in process_list:
                                                     if (x["symbol"] == y["symbol"]) and (x["prev_close_1m"] != 0) and (y["last_close_price"] - x["prev_close_1m"] != 0) and x["symbol"] not in self.pump_candidate_busy_list:                                                    
-                                                        cur_per_change = ((y["last_close_price"] - x["prev_close_1m"]) / x["prev_close_1m"])* 100                                                   
+                                                        cur_per_change = ((y["last_close_price"] - x["prev_close_1m"]) / x["prev_close_1m"])* 100    
+                                                        print(cur_per_change)                                               
 
                                                         if cur_per_change >= x["cur_price_agregated_compearer_5"]:
                                                             curDataTime = await self.cur_dateTime()
@@ -135,7 +133,7 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
                                                                 print('''hi self.pump_candidate_list.append((x["symbol"], 'PUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')
                                                                 self.pump_candidate_list.append((x["symbol"], 'PUMP', str(cur_per_change) + ' ' + '%', curDataTime))
                                                                 self.pump_candidate_busy_list.append(x["symbol"])
-                                                                self.websocket_returned_flag = True 
+                                                                self.websocket_pump_returned_flag = True 
                       
                                                         elif cur_per_change <= -1*x["cur_price_agregated_compearer_5"]:
                                                             curDataTime = await self.cur_dateTime()
@@ -143,7 +141,7 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
                                                                 print('''hi self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')                           
                                                                 self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))
                                                                 self.pump_candidate_busy_list.append(x["symbol"])
-                                                                self.websocket_returned_flag = True                                   
+                                                                self.websocket_pump_returned_flag = True                                   
                                                         
                                                         else:
                                                             pass
@@ -169,8 +167,12 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
                                                                 break
                                                                     
                                                     print(f"counter1: {counter}")
-                                                    counter = 0         
-                                            
+                                                    counter = 0   
+                                                if (current_time - last_update_time)/5 >= 1 and (i == len(coins_in_squeezeOn) - 1):    
+                                                    async with self.lock_candidate_coins: 
+                                                        if self.stop_bot_flag:
+                                                            return  
+                                                                                            
                                             process_list = []
                                             process_bufer_set = set()
 
@@ -199,8 +201,8 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
             if ws and not ws.closed:
                 await ws.close()
             await asyncio.sleep(1)  
-
-            return 'Finish_Flag'
+            self.websocket_stop_returned_flag = True
+            # return None
 
 # live_monitor = LIVE_MONITORING()     
 # upgraded_data = live_monitor.websocket_precession('BTCUSDT')

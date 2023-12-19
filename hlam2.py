@@ -742,3 +742,20 @@
 
 # if __name__ == "__main__":
 #     asyncio.run(main())
+
+
+                                # #  = asyncio.create_task(self.websocket_handler(self.coins_in_squeezeOn))  
+                                # loop = asyncio.get_event_loop()
+                                # loop.create_task(self.websocket_handler(self.coins_in_squeezeOn))
+
+
+
+
+
+
+# rocket_emoji = "\U0001F680"
+# lightning_emoji = "\u26A1"
+# clock_emoji = "\u231A"
+# film_emoji = "\U0001F39E"
+# percent_emoji = "%"
+# repeat_emoji = "\U0001F501"

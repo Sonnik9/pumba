@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -90,11 +91,36 @@ class INDICATRS_SETTINGS(FILTER_SET):
 
         # websocket params:
         # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
-        self.PRICE_KLINE_1M_MULTIPLITER = 1.9
-        self.VOLUME_KLINE_1M_MULTIPLITER = 3.9 # volum multipliter/1min
-        self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec    
+        self.PRICE_KLINE_1M_MULTIPLITER = 1.5
+        self.VOLUME_KLINE_1M_MULTIPLITER = 2.9 # volum multipliter/1min
+        self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec  
 
-class INIT_PARAMS(INDICATRS_SETTINGS):
+class TG_HANDLER_VARS(INDICATRS_SETTINGS):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def init_handler_vars(self):
+        self.lock_candidate_coins = asyncio.Lock()      
+        self.pump_candidate_list = [] 
+
+        self.settings_tg_flag = False
+
+        
+        self.launch_finish_text = None        
+        self.stop_bot_flag = False
+
+        self.websocket_stop_returned_flag = False
+        self.websocket_pump_returned_flag = False
+       
+        self.data_updating_flag = False
+        self.websocket_launch_flag = False
+        self.coins_in_squeezeOn = []   
+
+        self.stop_data_updating_func_flag = None 
+
+        self.go_progression = 0
+
+class INIT_PARAMS(TG_HANDLER_VARS):
     def __init__(self) -> None:
         super().__init__()
         self.init_itits()
@@ -103,6 +129,7 @@ class INIT_PARAMS(INDICATRS_SETTINGS):
         print('helloo')
         self.init_api_key()       
         self.init_urls()
+        self.init_handler_vars()
 
 
 
