@@ -1,10 +1,13 @@
 import ccxt
 import pandas as pd
-from config import CONFIG
+from TG.tg_apii import TG_APIII
+import asyncio
+import time
+
 
 method = 'GET'
 
-class GETT_API_CCXT(CONFIG):
+class GETT_API_CCXT(TG_APIII):
     def __init__(self):
         super().__init__()
         # print(self.api_key)
@@ -49,16 +52,22 @@ class GETT_API_CCXT(CONFIG):
             
         return current_balance
 
-    async def get_ccxtBinance_klines(self, symbol, timeframe, limit):
-        try:
-            klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
-            data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
-            data['Time'] = pd.to_datetime(data['Time'], unit='ms')
-            data.set_index('Time', inplace=True)
-            return data
-        except Exception as e:
-            print(f"Error fetching klines: {e}")
-            return pd.DataFrame()
+    def get_ccxtBinance_klines(self, symbol, timeframe, limit):
+        retry_number = 3
+        decimal = 1.1        
+        for i in range(retry_number):
+            try:
+                klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+                data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
+                data['Time'] = pd.to_datetime(data['Time'], unit='ms')
+                data.set_index('Time', inplace=True)
+                return data
+            except Exception as e:
+                print(f"Error fetching klines: {e}")
+                time.sleep(1)
+                # await asyncio.sleep(1.1 + i*decimal)     
+
+        return pd.DataFrame()
 
 
 # symbol = 'BNBUSDT'  # Replace with the symbol you're interested in

@@ -13,38 +13,7 @@ class LIVE_MONITORING(TECHNIQUESS, UTILSS):
 
     def __init__(self) -> None:
         super().__init__() 
-        self.pump_candidate_busy_list = []  
-
-
-    async def websocket_precession(self, symbol):
-        precession_upgraded_data = {}
-        try:
-            self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
-            self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-            timeframe = '1m'
-            limit = 12
-            m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)  
-            close_1m_5_dataFramelist = m1_data['Close']
-            close_1m_5_list = close_1m_5_dataFramelist.dropna().to_list()
-            mean_close_1m_5 = close_1m_5_dataFramelist.mean()         
-            
-            close_pct_changes_5_list = [abs((new - old) / old) * 100 if old != 0 else 0 for old, new in zip(close_1m_5_list[:-1], close_1m_5_list[1:])]
-
-            mean_close_pct_change_5 = sum(close_pct_changes_5_list) / len(close_pct_changes_5_list)
-            cur_price_agregated_compearer_5 = mean_close_pct_change_5 * self.PRICE_KLINE_1M_MULTIPLITER
-
-            if mean_close_1m_5 != 0:
-                precession_upgraded_data = {
-                    "symbol": symbol, 
-                    "prev_close_1m": "",                            
-                    "cur_price_agregated_compearer_5": abs(cur_price_agregated_compearer_5)
-                    
-                }   
-        except:
-            print('Some problem with m1 data')         
-
-        return precession_upgraded_data
-
+        self.pump_candidate_busy_list = []
 
     async def websocket_handler(self, coins_in_squeezeOn_arg):
         url = 'wss://stream.binance.com:9443/stream?streams='  

@@ -1,4 +1,4 @@
-from TG.tg_api import main_tg_func
+from TG.tg_handlers import main_tg_func
 
 def main():
     main_tg_func() 

@@ -14,6 +14,7 @@ class CONFIG(INIT_PARAMS):
 
     def __init__(self) -> None:
         super().__init__()
+
     def get_signature(self, params):
         try:
             params['timestamp'] = int(time.time() *1000)
