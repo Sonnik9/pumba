@@ -9,11 +9,11 @@ class TEMPP(MAIN_LOGIC):
         super().__init__()
 
     def make_market_order_temp_func(self, item):
-
         itemm = item.copy()
         symbol = itemm["symbol"]
         try:
-            lev = self.set_leverage(symbol)                    
+            lev = self.set_leverage(symbol)     
+            print(f"lev: {lev}")               
         except Exception as ex:
             logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
         if lev and 'leverage' in lev and lev['leverage'] == self.LEVERAGE:
@@ -22,15 +22,21 @@ class TEMPP(MAIN_LOGIC):
                 itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = self.calc_qnt_func(symbol, enter_deJure_price, self.DEPO)            
             except Exception as ex:
                 logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
-
+            print(f"itemm['qnt'] before: {itemm['qnt']}") 
             if itemm['qnt']:
+                try:
+                    itemm['qnt'] = self.transformed_qnt(itemm["symbol"], itemm['qnt'])
+                    print(f"itemm['qnt'] transformed: {itemm['qnt']}") 
+                except Exception as pe:
+                    print(pe)
+                    logging.warning(f"Precision error in transforming qnt: {pe}")
                 is_closing = 1
                 success_flag = False
                 market_type = 'MARKET'
                 target_price = None
                 try:          
                     open_market_order, success_flag = self.make_order(itemm, is_closing, target_price, market_type)
-                    # print(f"str74:  {open_market_order}") 
+                    print(f"open_market_order:  {open_market_order}") 
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex} \n {open_market_order}")
                 if success_flag:                
@@ -52,10 +58,20 @@ class TEMPP(MAIN_LOGIC):
         try:           
             success_flag = False   
             target_price = self.static_tp_calc(itemm)
+            print(f"target_price before transformed: {target_price}")
+            try:
+                target_price = self.transformed_price(itemm["symbol"], target_price)
+                print(f"target_price transformed: {target_price}")
+            except Exception as pe:
+                print(pe)
+                logging.warning(f"Precision error in transforming price: {pe}")
+
+            target_price = self.transformed_price(itemm["symbol"], target_price)
+            print(f"target_price: {target_price}")
             market_type = 'TAKE_PROFIT_MARKET' 
             
             open_static_tp_order, success_flag = self.make_order(itemm, is_closing, target_price, market_type)
-            # print(f'open_static_tp_order  {open_static_tp_order}')
+            print(f'open_static_tp_order  {open_static_tp_order}')
             if success_flag:                                     
                 itemm["done_level"] = 2            
         

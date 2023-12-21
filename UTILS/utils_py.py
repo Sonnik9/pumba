@@ -70,7 +70,8 @@ class UTILSS(TECHNIQUESS):
         if symbol_data:            
             try:                
                 tick_size = float(symbol_data['filters'][0]["tickSize"])
-                price_precision = int(symbol_data['pricePrecision'])            
+                price_precision = int(symbol_data['pricePrecision']) 
+                print(f"price_precision: {price_precision}")           
                 quantity_precision = int(symbol_data['quantityPrecision'])                 
                 min_qnt = float(symbol_data['filters'][1]['minQty'])
                 max_qnt = float(symbol_data['filters'][1]['maxQty'])
@@ -79,6 +80,7 @@ class UTILSS(TECHNIQUESS):
         
             try:
                 tick_size = self.count_multipliter_places(tick_size)
+                print(f"tick_size: {tick_size}")
             except Exception as ex:
                 print(ex) 
             
@@ -106,7 +108,7 @@ class UTILSS(TECHNIQUESS):
         enter_deFacto_price, defender, atr, price_precision, tick_size = item['enter_deFacto_price'], item['defender'], item['atr'], item['price_precision'], item['tick_size']        
         print(f"price_precision == tick_size: {price_precision == tick_size}")        
         try:            
-            item['tp_price'] = round(enter_deFacto_price + (defender * atr * tp_ratio), tick_size)
+            tp_price = item['tp_price'] = round(enter_deFacto_price + (defender * atr * tp_ratio), tick_size)
         except Exception as ex:
             logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
 

@@ -9,8 +9,9 @@ class BASIC_PARAMETRS():
         self.SOLI_DEO_GLORIA = 'Soli Deo Gloria!'        
         # self.market = 'spot'
         self.market = 'futures'
-        self.test_flag = True
-        # self.test_flag = False
+        self.get_ccxtData_testnet = False
+        self.open_order_testnet_flag = True
+        self.test_flag = self.get_ccxtData_testnet
         # self.DIVERCIFICATION_NUMDER = 15
 
     def init_api_key(self):
@@ -122,9 +123,9 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         super().__init__()
         self.order_triger = False 
         self.open_order_redirect_flag = False
-        self.LEVERAGE = 9
+        self.LEVERAGE = 4
         self.static_TP_flag = True 
-        self.TP_rate = 2
+        self.TP_rate = 3
         self.DEPO = 9
         self.DIVERCIFICATION_NUMDER = 9
 

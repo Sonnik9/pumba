@@ -20,6 +20,8 @@ class MAIN_LOGIC(LIVE_MONITORING):
     def __init__(self) -> None:
         super().__init__()
 
+
+
     async def websocket_precession(self, symbol):
         precession_upgraded_data = {}
         try:
@@ -87,9 +89,10 @@ class MAIN_LOGIC(LIVE_MONITORING):
 
     async def launch(self, message):                
         cur_time = time.time()
-        date_of_the_month_start = await self.date_of_the_month()           
+        date_of_the_month_start = await self.date_of_the_month()       
 
         while True: 
+            
             last_update_time = time.time() - cur_time              
             
             if (cur_time - last_update_time)/3 >= 1:    
@@ -112,50 +115,60 @@ class MAIN_LOGIC(LIVE_MONITORING):
                     if self.coins_in_squeezeOn:
                         self.go_progression += 1
                         self.websocket_launch_flag = True
-                        #  = asyncio.create_task(self.websocket_handler(self.coins_in_squeezeOn))  
-                        loop = asyncio.get_event_loop()
-                        loop.create_task(self.websocket_handler(self.coins_in_squeezeOn))
+                        asyncio.create_task(self.websocket_handler(self.coins_in_squeezeOn))  
+                        # loop = asyncio.get_event_loop()
+                        # loop.create_task(self.websocket_handler(self.coins_in_squeezeOn))
                     
                     else:
                         self.data_updating_flag = False
                         self.websocket_launch_flag = False
                         await asyncio.sleep(61)
                     
-            async with self.lock_candidate_coins:   
+            async with self.lock_candidate_coins:  
                 if self.websocket_pump_returned_flag: 
-                    response_textt = ""  
-                    # self.go_progression += 1               
-                    
-                    just_candidate_symbol_list = [x[0] for x in self.pump_candidate_list]
-                    self.signal_number_acumm_list += just_candidate_symbol_list
-                    print("Кандидаты в ПАМП/ДАМП:", just_candidate_symbol_list)
-                    date_of_the_month_current = await self.date_of_the_month()
-                    if date_of_the_month_current != date_of_the_month_start:
-                        self.signal_number_acumm_list = []
-                        date_of_the_month_start = date_of_the_month_current
-                        self.pump_candidate_busy_list = []
+                    while True:
+                        if not self.order_triger:                        
+                            response_textt = ""  
+                            # self.go_progression += 1               
+                            
+                            just_candidate_symbol_list = [x[0] for x in self.pump_candidate_list]
+                            self.signal_number_acumm_list += just_candidate_symbol_list
+                            print("Кандидаты в ПАМП/ДАМП:", just_candidate_symbol_list)
+                            date_of_the_month_current = await self.date_of_the_month()
+                            if date_of_the_month_current != date_of_the_month_start:
+                                self.signal_number_acumm_list = []
+                                date_of_the_month_start = date_of_the_month_current
+                                self.pump_candidate_busy_list = []
 
-                    last_update_time = time.time() - cur_time  
-                    duration = round(last_update_time/60, 2)
-                    cur_time = time.time()
-                
-                    for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
-                        volum_confirma = await self.volume_confirmation(symbol)
-                        if volum_confirma:
-                            signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
-                            link = f"https://www.coinglass.com/tv/Binance_{symbol}"
-                            if defender == "PUMP":
-                                defini_emoji_var = upper_trigon_emoji
-                            else:
-                                defini_emoji_var = lower_trigon_emoji
-                            response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} --- {symbol}\n{clock_emoji} --- {curTimee}\n{defini_emoji_var} --- {defender}\n{percent_emoji} --- {cur_per_change}\n{confirm_emoji} (volum) --- {str(volum_confirma)}\n{film_emoji} --- {duration} min\n{repeat_emoji} --- {signal_number}\n{link_emoji} --- {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
-                    if response_textt:
-                        message.text = self.connector_func(message, response_textt)                    
+                            last_update_time = time.time() - cur_time  
+                            duration = round(last_update_time/60, 2)
+                            cur_time = time.time()
+                        
+                            for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
+                                volum_confirma = await self.volume_confirmation(symbol)
+                                if volum_confirma:
+                                    signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
+                                    link = f"https://www.coinglass.com/tv/Binance_{symbol}"
+                                    if defender == "PUMP":
+                                        defini_emoji_var = upper_trigon_emoji
+                                    else:
+                                        defini_emoji_var = lower_trigon_emoji
+                                    response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} --- {symbol}\n{clock_emoji} --- {curTimee}\n{defini_emoji_var} --- {defender}\n{percent_emoji} --- {cur_per_change}\n{confirm_emoji} (volum) --- {str(volum_confirma)}\n{film_emoji} --- {duration} min\n{repeat_emoji} --- {signal_number}\n{link_emoji} --- {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
+                            if response_textt:
+                                message.text = self.connector_func(message, response_textt)                    
 
-                    self.websocket_pump_returned_flag = False
-                    self.pump_candidate_list = []  
-                    await asyncio.sleep(1)                  
+                            self.websocket_pump_returned_flag = False
+                            self.pump_candidate_list = []  
+                            await asyncio.sleep(1)  
+                            break 
+                        else:
+                            print(f"self.order_triger: {self.order_triger}")
+                            await asyncio.sleep(2) 
 
-            await asyncio.sleep(4)  
+
+            await asyncio.sleep(2)  
             print('await asyncio.sleep(4)')
+            # else:
+
+
             
