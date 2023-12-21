@@ -7,7 +7,7 @@ class TG_APIII(CONFIG):
         super().__init__()
         self.bot = telebot.TeleBot(self.tg_api_token)
         self.menu_markup = self.create_menu()
-        self.reserved_frathes_list = ["SETTINGS", "GO", "STOP", "BALANCE", "RESTART", "1", "2"]
+        self.reserved_frathes_list = ["SETTINGS", "GO", "STOP", "OPEN_ORDER", "CLOSE_POSITION", "BALANCE", "RESTART", "1", "2"]
         self.signal_number_acumm_list = []        
 
     def create_menu(self):
@@ -17,5 +17,7 @@ class TG_APIII(CONFIG):
         button3 = types.KeyboardButton("BALANCE")
         button4 = types.KeyboardButton("RESTART")
         button5 = types.KeyboardButton("STOP")
-        menu_markup.add(button1, button2, button3, button4, button5)        
+        button6 = types.KeyboardButton("OPEN_ORDER")
+        button7 = types.KeyboardButton("CLOSE_POSITION")
+        menu_markup.add(button1, button2, button3, button4, button5, button6, button7)        
         return menu_markup

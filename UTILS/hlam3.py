@@ -185,3 +185,24 @@
 # formatted_amount = exchange.amount_to_precision(symbol, amount)
 # formatted_price = exchange.price_to_precision(symbol, price)
 # print(formatted_amount, formatted_price)
+
+
+
+
+            # print('spot') 
+            # self.URL_PATTERN_DICT['current_ptice_url'] = "https://api.binance.com/api/v3/ticker/price"            
+            # self.URL_PATTERN_DICT['all_tikers_url'] = "https://api.binance.com/api/v3/ticker/24hr"
+            # self.URL_PATTERN_DICT['create_order_url'] = 'https://api.binance.com/api/v3/order' 
+            # self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://api.binance.com/api/v3/exchangeInfo'
+            # self.URL_PATTERN_DICT['balance_url'] = 'https://api.binance.com/api/v3/account'
+            # self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://api.binance.com/api/v3/openOrders'
+            # self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://api.binance.com/api/v3/allOpenOrders'
+            # self.URL_PATTERN_DICT['positions_url'] = 'https://api.binance.com/api/v3/account'                
+            # self.URL_PATTERN_DICT["klines_url"] = 'https://api.binance.com/api/v3/klines'
+            # print('futures')
+            # self.URL_PATTERN_DICT['all_tikers_url'] = "https://fapi.binance.com/fapi/v1/ticker/24hr"
+            # self.URL_PATTERN_DICT['create_order_url'] = 'https://fapi.binance.com/fapi/v1/order' 
+            # self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://fapi.binance.com/fapi/v1/exchangeInfo'
+            # self.URL_PATTERN_DICT['balance_url'] = 'https://fapi.binance.com/fapi/v1/balance'
+            # self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/openOrders'
+            # self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/allOpenOrders'

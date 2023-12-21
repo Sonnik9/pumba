@@ -10,18 +10,15 @@ class BASIC_PARAMETRS():
         # self.market = 'spot'
         self.market = 'futures'
         self.test_flag = True
-        self.test_flag = False
+        # self.test_flag = False
         # self.DIVERCIFICATION_NUMDER = 15
-        # self.DEPO = 20
 
     def init_api_key(self):
         self.tg_api_token = os.getenv("TG_API_TOKEN", "")
-        if not self.test_flag:
-            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_REAL", "")
-            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_REAL", "")
-        else:
-            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_FUTURES_TEST", "")
-            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_FUTURES_TEST", "")    
+
+        self.api_key  = os.getenv(f"BINANCE_API_PUBLIC_KEY__TESTNET_{str(self.test_flag)}", "")
+        self.api_secret = os.getenv(f"BINANCE_API_PRIVATE_KEY__TESTNET_{str(self.test_flag)}", "")
+  
 
         self.header = {
             'X-MBX-APIKEY': self.api_key
@@ -33,31 +30,31 @@ class URL_TEMPLATES(BASIC_PARAMETRS):
         self.URL_PATTERN_DICT= {}              
 
     def init_urls(self):  
-        # if not self.test_flag:      
-        #     if self.market == 'spot':  
-        #         print('spot') 
-        #         self.URL_PATTERN_DICT['current_ptice_url'] = "https://api.binance.com/api/v3/ticker/price"            
-        #         self.URL_PATTERN_DICT['all_tikers_url'] = "https://api.binance.com/api/v3/ticker/24hr"
-        #         self.URL_PATTERN_DICT['create_order_url'] = 'https://api.binance.com/api/v3/order' 
-        #         self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://api.binance.com/api/v3/exchangeInfo'
-        #         self.URL_PATTERN_DICT['balance_url'] = 'https://api.binance.com/api/v3/account'
-        #         self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://api.binance.com/api/v3/openOrders'
-        #         self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://api.binance.com/api/v3/allOpenOrders'
-        #         self.URL_PATTERN_DICT['positions_url'] = 'https://api.binance.com/api/v3/account'                
-        #         self.URL_PATTERN_DICT["klines_url"] = 'https://api.binance.com/api/v3/klines'
+        if not self.test_flag:     
+        
+            self.URL_PATTERN_DICT['current_ptice_url'] = "https://fapi.binance.com/fapi/v1/ticker/price"
+            self.URL_PATTERN_DICT['all_tikers_url'] = "https://fapi.binance.com/fapi/v1/ticker/24hr"
+            self.URL_PATTERN_DICT['create_order_url'] = 'https://fapi.binance.com/fapi/v1/order'
+            self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://fapi.binance.com/fapi/v1/exchangeInfo'
+            self.URL_PATTERN_DICT['balance_url'] = 'https://fapi.binance.com/fapi/v2/balance'
+            self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/openOrders'
+            self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/allOpenOrders'
+            self.URL_PATTERN_DICT['positions_url'] = 'https://fapi.binance.com/fapi/v2/positionRisk'
+            self.URL_PATTERN_DICT["set_leverage_url"] = 'https://fapi.binance.com/fapi/v1/leverage'
+            self.URL_PATTERN_DICT["klines_url"] = 'https://fapi.binance.com/fapi/v1/klines'
 
-        # else:
-        print('futures test')
-        self.URL_PATTERN_DICT['current_ptice_url'] = "https://fapi.binance.com/fapi/v1/ticker/price"
-        self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
-        self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
-        self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
-        self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binancefuture.com/fapi/v2/balance'
-        self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/openOrders'
-        self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/allOpenOrders'
-        self.URL_PATTERN_DICT['positions_url'] = 'https://testnet.binancefuture.com/fapi/v2/positionRisk'
-        self.URL_PATTERN_DICT["set_leverage_url"] = 'https://testnet.binancefuture.com/fapi/v1/leverage'
-        self.URL_PATTERN_DICT["klines_url"] = 'https://testnet.binancefuture.com/fapi/v1/klines'
+        else:
+            print('futures test')
+            self.URL_PATTERN_DICT['current_ptice_url'] = "https://fapi.binance.com/fapi/v1/ticker/price"
+            self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
+            self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
+            self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
+            self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binancefuture.com/fapi/v2/balance'
+            self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/openOrders'
+            self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/allOpenOrders'
+            self.URL_PATTERN_DICT['positions_url'] = 'https://testnet.binancefuture.com/fapi/v2/positionRisk'
+            self.URL_PATTERN_DICT["set_leverage_url"] = 'https://testnet.binancefuture.com/fapi/v1/leverage'
+            self.URL_PATTERN_DICT["klines_url"] = 'https://testnet.binancefuture.com/fapi/v1/klines'
 
     
 class TIME_TEMPLATES(URL_TEMPLATES):   
@@ -120,7 +117,18 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
 
         self.go_progression = 0
 
-class INIT_PARAMS(TG_HANDLER_VARS):
+class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
+    def __init__(self) -> None:
+        super().__init__()
+        self.order_triger = False 
+        self.open_order_redirect_flag = False
+        self.LEVERAGE = 9
+        self.static_TP_flag = True 
+        self.TP_rate = 2
+        self.DEPO = 9
+        self.DIVERCIFICATION_NUMDER = 9
+
+class INIT_PARAMS(OPEN_ORDER_PARAMS):
     def __init__(self) -> None:
         super().__init__()
         self.init_itits()

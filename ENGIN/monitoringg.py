@@ -1,4 +1,3 @@
-from TECHNIQUES.techniques_py import TECHNIQUESS
 from UTILS.utils_py import UTILSS
 import asyncio
 import aiohttp
@@ -9,7 +8,7 @@ import logging
 import os
 import inspect
 
-class LIVE_MONITORING(TECHNIQUESS, UTILSS):
+class LIVE_MONITORING(UTILSS):
 
     def __init__(self) -> None:
         super().__init__() 

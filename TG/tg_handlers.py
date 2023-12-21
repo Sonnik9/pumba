@@ -1,7 +1,7 @@
-from logicc import MAIN_LOGIC
+from TEMPLATES.open_market_order_temp import TEMPP
 import asyncio
        
-class TG_HANDLERR(MAIN_LOGIC):
+class TG_HANDLERR(TEMPP):
     def __init__(self):
         super().__init__()
 
@@ -9,6 +9,8 @@ class TG_HANDLERR(MAIN_LOGIC):
         self.market = new_market
         self.test_flag = new_test_flag
         self.init_itits()
+
+
 
     def run(self):          
 
@@ -52,6 +54,48 @@ class TG_HANDLERR(MAIN_LOGIC):
             message.text = self.connector_func(message, response_message)
             self.launch_finish_text = asyncio.run(self.launch(message))
             message.text = self.connector_func(message, self.launch_finish_text)
+
+        @self.bot.message_handler(func=lambda message: message.text == "OPEN_ORDER")
+        def open_order(message):
+            # self.init_itits()            
+            response_message = "Please enter a coin and side with a space (e.g.: btc 1)\n1 -- Long;\n-1 -- Short"
+            message.text = self.connector_func(message, response_message)
+            self.order_triger = True
+            self.open_order_redirect_flag = True           
+            
+        @self.bot.message_handler(func=lambda message: self.open_order_redirect_flag)
+        def open_order_redirect(message):
+
+            
+            
+            item = {}  
+            item["current_price"] = self.get_current_price(symbol)
+            print(item["current_price"])   
+
+
+            symbol = item["symbol"] = message.text.split(' ')[0].strip().upper() + 'USDT'       
+            item["defender"] = int(message.text.split(' ')[1].strip())
+
+
+            timeframe = '1m'
+            limit = 15
+            m1_15_data = self.get_ccxtBinance_klines_usual(symbol, timeframe, limit)            
+            m1_15_data['TR'] = abs(m1_15_data['High'] - m1_15_data['Low'])
+            m1_15_data['ATR'] = m1_15_data['TR'].rolling(window=14).mean()
+            item['atr'] = m1_15_data['ATR'].iloc[-1]
+
+            self.test_flag = True 
+            self.init_api_key()
+            self.init_urls()
+            item = self.make_market_order_temp_func(item)
+
+            if item['in_position']:
+                response_message = 'The order was created successfuly!'
+                message.text = self.connector_func(message, response_message)
+                item = self.tp_make_orders(item)
+                if item["done_level"] == 2:
+                    response_message = 'The takeProfit order was created successfuly!'
+                    message.text = self.connector_func(message, response_message)       
 
         @self.bot.message_handler(func=lambda message: message.text not in self.reserved_frathes_list)
         def exceptions_input(message):
