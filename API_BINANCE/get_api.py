@@ -3,15 +3,16 @@ import pandas as pd
 # import random
 import ccxt
 import pandas as pd
-from TG.tg_apii import TG_APIII
+
 import asyncio
 import time
+from constructorr import CONFIG_BINANCEE
 
 method = 'GET'
 
-class GETT_API_CCXT(TG_APIII):
-    def __init__(self):
-        super().__init__()
+class GETT_API_CCXT(CONFIG_BINANCEE):
+    def __init__(self):   
+        super().__init__()     
         self.exchange = None
         self.init_api_ccxt()
 
@@ -153,14 +154,14 @@ class GETT_API(GETT_API_CCXT):
 
 # # ////////////////////////////////////////////////////////////////////////////////////
 
-#     def get_all_orders(self):
-#         all_orders = None        
-#         params = {}               
-#         url = self.URL_PATTERN_DICT['get_all_orders_url']
-#         params = self.get_signature(params)
-#         all_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
+    def get_all_orders(self):
+        all_orders = None        
+        params = {}               
+        url = self.URL_PATTERN_DICT['get_all_orders_url']
+        params = self.get_signature(params)
+        all_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
 
-#         return all_orders
+        return all_orders
     
     def get_open_positions(self):
        
@@ -197,11 +198,11 @@ class GETT_API(GETT_API_CCXT):
 # print(klines_data)
 
 
-GETT_API_CCXTxfjk = GETT_API_CCXT()
-symbol = 'BTC/USDT'
-amount = 1.234567887  # amount in base currency BTC
-price = 42500.321  # price in quote currency USDT
-formatted_amount = GETT_API_CCXTxfjk.transformed_qnt(symbol, amount)
-formatted_price = GETT_API_CCXTxfjk.transformed_price(symbol, price)
-print(formatted_amount, formatted_price)
+# GETT_API_CCXTxfjk = GETT_API_CCXT()
+# symbol = 'BTC/USDT'
+# amount = 1.234567887  # amount in base currency BTC
+# price = 42500.321  # price in quote currency USDT
+# formatted_amount = GETT_API_CCXTxfjk.transformed_qnt(symbol, amount)
+# formatted_price = GETT_API_CCXTxfjk.transformed_price(symbol, price)
+# print(formatted_amount, formatted_price)
 

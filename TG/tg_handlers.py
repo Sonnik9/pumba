@@ -101,6 +101,14 @@ class TG_HANDLERR(TEMPP):
             self.init_api_ccxt()
             self.order_triger = False
 
+        @self.bot.message_handler(func=lambda message: message.text == "CLOSE_POSITION")
+        def open_order(message):
+            # self.init_itits()            
+            response_message = "Please enter a coin(e.g.: btc)"
+            message.text = self.connector_func(message, response_message)
+            self.order_triger = True
+            self.close_position_redirect_flag = True   
+
         @self.bot.message_handler(func=lambda message: message.text not in self.reserved_frathes_list)
         def exceptions_input(message):
             response_message = f"Try again and enter a valid option."

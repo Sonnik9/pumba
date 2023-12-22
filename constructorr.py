@@ -1,7 +1,17 @@
-from datetime import datetime
+# from datetime import datetime
 import os
 import asyncio
+import telebot
+from telebot import types
+import logging, os, inspect
 from dotenv import load_dotenv
+import time
+import hmac
+import hashlib
+import requests
+logging.basicConfig(filename='API_BINANCE/config_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
+
 load_dotenv()
 
 class BASIC_PARAMETRS():
@@ -123,6 +133,7 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         super().__init__()
         self.order_triger = False 
         self.open_order_redirect_flag = False
+        self.close_position_redirect_flag = False
         self.LEVERAGE = 4
         self.static_TP_flag = True 
         self.TP_rate = 3
@@ -140,6 +151,68 @@ class INIT_PARAMS(OPEN_ORDER_PARAMS):
         self.init_urls()
         self.init_handler_vars()
 
+class CONFIG_TG(INIT_PARAMS):
+    def __init__(self):  
+        super().__init__()      
+        self.bot = telebot.TeleBot(self.tg_api_token)
+        self.menu_markup = self.create_menu()
+        self.reserved_frathes_list = ["SETTINGS", "GO", "STOP", "OPEN_ORDER", "CLOSE_POSITION", "BALANCE", "RESTART", "1", "2"]
+        self.signal_number_acumm_list = []        
 
+    def create_menu(self):
+        menu_markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+        button1 = types.KeyboardButton("GO") 
+        button2 = types.KeyboardButton("SETTINGS")        
+        button3 = types.KeyboardButton("BALANCE")
+        button4 = types.KeyboardButton("RESTART")
+        button5 = types.KeyboardButton("STOP")
+        button6 = types.KeyboardButton("OPEN_ORDER")
+        button7 = types.KeyboardButton("CLOSE_POSITION")
+        menu_markup.add(button1, button2, button3, button4, button5, button6, button7)        
+        return menu_markup
 
-# python -m pparamss
+# from constructorr import INIT_PARAMS
+
+class CONFIG_BINANCEE(CONFIG_TG):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def get_signature(self, params):
+        try:
+            params['timestamp'] = int(time.time() *1000)
+            params_str = '&'.join([f'{k}={v}' for k,v in params.items()])
+            hash = hmac.new(bytes(self.api_secret, 'utf-8'), params_str.encode('utf-8'), hashlib.sha256)        
+            params['signature'] = hash.hexdigest()
+        except Exception as ex:
+            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+
+        return params
+   
+    def HTTP_request(self, url, **kwards):
+
+        response = None
+        multipliter = 2
+
+        for i in range(2):
+            try:
+                # print('hi')
+                response = requests.request(url=url, **kwards)
+                # print(response)
+                if response.status_code == 200:
+                    break
+                else:
+                    time.sleep((i+1) * multipliter)              
+   
+            except Exception as ex:
+                logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                time.sleep((i+1) * multipliter)                
+                
+        try:
+            response = response.json()
+        except:
+            pass
+
+        return response
+
+# python constructorr.py

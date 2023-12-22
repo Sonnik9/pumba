@@ -4,6 +4,7 @@ method = 'POST'
 class POSTT_API(GETT_API):
 
     def __init__(self) -> None:
+        
         super().__init__()    
         # self.init_post_api()
 

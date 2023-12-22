@@ -1,6 +1,6 @@
-from API_BINANCE.utils_api import UTILS_APII
+from API_BINANCE.get_api import GETT_API
 
-class TECHNIQUESS(UTILS_APII):
+class TECHNIQUESS(GETT_API):
     def __init__(self) -> None:
         super().__init__()
 # ///////////////////////////////////////////////////////////////////////////////////////////////////

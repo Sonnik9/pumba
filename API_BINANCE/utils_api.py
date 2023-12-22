@@ -1,6 +1,6 @@
-from API_BINANCE.post_api import POSTT_API
+from API_BINANCE.delete_api import DELETEE_API 
 
-class UTILS_APII(POSTT_API):
+class UTILS_APII(DELETEE_API):
 
     def __init__(self) -> None:
         super().__init__()

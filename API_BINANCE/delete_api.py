@@ -1,7 +1,7 @@
-
+from API_BINANCE.post_api import POSTT_API
 method = 'DELETE'
 
-class DELETEE_API():
+class DELETEE_API(POSTT_API):
 
     def __init__(self) -> None:
         super().__init__()
