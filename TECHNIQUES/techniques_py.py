@@ -1,6 +1,6 @@
-from API_BINANCE.get_api import GETT_API
+from API_BINANCE.get_api import GETT_API_CCXT
 
-class TECHNIQUESS(GETT_API):
+class TECHNIQUESS(GETT_API_CCXT):
     def __init__(self) -> None:
         super().__init__()
 # ///////////////////////////////////////////////////////////////////////////////////////////////////

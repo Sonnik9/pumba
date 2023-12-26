@@ -1,32 +1,15 @@
-import pandas as pd
 # import time
 # import random
-import ccxt
 import pandas as pd
-
 import asyncio
 import time
-from constructorr import CONFIG_BINANCEE
+from connectorss import CONNECTOR_TG
 
 method = 'GET'
 
-class GETT_API_CCXT(CONFIG_BINANCEE):
+class GETT_API_CCXT(CONNECTOR_TG):
     def __init__(self):   
         super().__init__()     
-        self.exchange = None
-        self.init_api_ccxt()
-
-    def init_api_ccxt(self):
-        self.test_flag = self.get_ccxtData_testnet
-        self.init_api_key()
-        self.init_urls() 
-        print(self.api_key)
-        print(self.api_secret)
-        self.exchange = ccxt.binance({
-            'apiKey': self.api_key,
-            'secret': self.api_secret,
-            'enableRateLimit': True, 
-        })
 
     async def get_ccxtBinance_klines(self, symbol, timeframe, limit):
 
@@ -48,13 +31,13 @@ class GETT_API_CCXT(CONFIG_BINANCEE):
         return pd.DataFrame()
     
     def get_ccxtBinance_klines_usual(self, symbol, timeframe, limit):
-        self.init_api_ccxt()
-        
+       
         retry_number = 3
         decimal = 1.1        
         for i in range(retry_number):
             try:
                 klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+                # print(klines)
                 data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
                 data['Time'] = pd.to_datetime(data['Time'], unit='ms')
                 data.set_index('Time', inplace=True)
@@ -67,23 +50,16 @@ class GETT_API_CCXT(CONFIG_BINANCEE):
         return pd.DataFrame()
 
     def transformed_qnt(self, symbol, amount):
-        self.init_api_ccxt()
+        
         self.exchange.load_markets()
         formatted_amount = self.exchange.amount_to_precision(symbol, amount)
         return formatted_amount
 
     def transformed_price(self, symbol, price):
-        self.init_api_ccxt()
+        
         self.exchange.load_markets()
         formatted_price = self.exchange.price_to_precision(symbol, price)
         return formatted_price
-# exchange.load_markets()
-# symbol = 'BTC/USDT'
-# amount = 1.2345678  # amount in base currency BTC
-# price = 87654.321  # price in quote currency USDT
-# formatted_amount = exchange.amount_to_precision(symbol, amount)
-# formatted_price = exchange.price_to_precision(symbol, price)
-# print(formatted_amount, formatted_price)
 
 class GETT_API(GETT_API_CCXT):
 
@@ -91,14 +67,14 @@ class GETT_API(GETT_API_CCXT):
         super().__init__()   
         
     def get_all_tickers(self):
+
         all_tickers = None
         url = self.URL_PATTERN_DICT['all_tikers_url']        
         all_tickers = self.HTTP_request(url, method=method, headers=self.header)
 
         return all_tickers
     
-    def get_excangeInfo(self, symbol):
-       
+    def get_excangeInfo(self, symbol):       
 
         exchangeInfo = None
         if symbol:            
@@ -135,11 +111,8 @@ class GETT_API(GETT_API_CCXT):
             # print(current_balance)
             
         return current_balance
-    
-
-    
-    def get_DeFacto_price(self, symbol):
         
+    def get_DeFacto_price(self, symbol):       
 
         positions = None        
         url = self.URL_PATTERN_DICT['positions_url']
@@ -178,8 +151,8 @@ class GETT_API(GETT_API_CCXT):
         return all_positions 
 # # //////////////////////////////////////////////////////////////////////////////////
 
-# # get_apii = GETT_API()
-# # symbol = 'BNBUSDT'
+get_apii = GETT_API()
+symbol = 'BNBUSDT'
 # # klines = get_apii.get_klines(symbol, 100)
 # # print(klines)
 # # price = get_apii.get_current_price(symbol)
@@ -200,6 +173,7 @@ class GETT_API(GETT_API_CCXT):
 
 # GETT_API_CCXTxfjk = GETT_API_CCXT()
 # symbol = 'BTC/USDT'
+# klines = GETT_API_CCXTxfjk.get_ccxtBinance_klines_usual(symbol, '1m', 100)
 # amount = 1.234567887  # amount in base currency BTC
 # price = 42500.321  # price in quote currency USDT
 # formatted_amount = GETT_API_CCXTxfjk.transformed_qnt(symbol, amount)

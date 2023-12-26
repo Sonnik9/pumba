@@ -3,33 +3,22 @@ method = 'POST'
 
 class POSTT_API(GETT_API):
 
-    def __init__(self) -> None:
-        
+    def __init__(self) -> None:        
         super().__init__()    
-        # self.init_post_api()
 
-    def init_post_api(self):
-        self.test_flag = self.open_order_testnet_flag
-        self.init_api_key()
-        self.init_urls()
-        print(self.api_key)
-        print(self.api_secret) 
-
-    def set_leverage(self, symbol):
-        self.init_post_api()
-
+    def set_leverage(self, symbol, lev_size):
+        
         params = {}
         url = self.URL_PATTERN_DICT["set_leverage_url"]
         params['symbol'] = symbol
-        params['leverage'] = self.LEVERAGE
+        params['leverage'] = lev_size
         params = self.get_signature(params)
         response = self.HTTP_request(url, method=method, headers=self.header, params=params)
         
         return response 
     
     def make_order(self, item, is_closing, target_price, market_type):
-        self.init_post_api()
-
+        
         response = None
         success_flag = False
         url = self.URL_PATTERN_DICT['create_order_url']
