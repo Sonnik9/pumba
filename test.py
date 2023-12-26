@@ -94,40 +94,50 @@
 # asyncio.run(foo())
 
 
-import asyncio
+# import asyncio
 
-async def foo2():
-    print('foo2')
-    counter = 0
-    while True:
-        await asyncio.sleep(1)
-        print('tik!')
-        counter += 1
-        if counter == 5:
-            return ['slkdfjvn']
+# async def foo2():
+#     print('foo2')
+#     counter = 0
+#     while True:
+#         await asyncio.sleep(1)
+#         print('tik!')
+#         counter += 1
+#         if counter == 5:
+#             return ['slkdfjvn']
 
-async def foo():
-    start_flag = False
-    while True:
-        await asyncio.sleep(1)
-        if not start_flag:
-            tasks = [foo2()]
-            return_foo2 = asyncio.gather(*tasks)
-            start_flag = True
+# async def foo():
+#     start_flag = False
+#     while True:
+#         await asyncio.sleep(1)
+#         if not start_flag:
+#             tasks = [foo2()]
+#             return_foo2 = asyncio.gather(*tasks)
+#             start_flag = True
 
-        # Проверка, завершилась ли задача
-        if return_foo2.done():
-            results = return_foo2.result()
+#         # Проверка, завершилась ли задача
+#         if return_foo2.done():
+#             results = return_foo2.result()
 
-            # Проверка, является ли результат списком
-            if isinstance(results, list):
-                print('It is a list!!')
+            
+#             if isinstance(results, list):
+#                 print('It is a list!!')
 
-                # Проверка, что все элементы в списке также являются списками
-                if all(isinstance(item, list) for item in results):
-                    print('All items in the list are lists.')
-                print(results[0])
-                return   # Извлекаем результат из списка
+                
+#                 if all(isinstance(item, list) for item in results):
+#                     print('All items in the list are lists.')
+#                 print(results[0])
+#                 return  
 
-asyncio.run(foo())
+# asyncio.run(foo())
 
+# original_a = list(range(6))
+# a = original_a.copy()
+
+# for i in reversed(range(len(a))):
+#     original_a.pop(i)
+#     print(len(original_a))
+
+# # Теперь original_a - это пустой список, а a остался без изменений
+# print(original_a)
+# print(a)

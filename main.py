@@ -157,15 +157,17 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                         self.data_updating_flag = False
                         self.websocket_launch_flag = False
                         await asyncio.sleep(61)
+
                     
             async with self.lock_candidate_coins:  
-                if return_webSocket.done():                            
+                if self.websocket_pump_returned_flag:                            
                     self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
                     last_update_time = time.time() - cur_time  
                     duration = round(last_update_time/60, 2)
                     cur_time = time.time()
                     self.tg_response_allow = True    
 
+            if self.tg_response_allow:
                 response_textt = ""  
 
                 for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
@@ -183,9 +185,13 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                 async with self.lock_candidate_coins: 
                     self.websocket_pump_returned_flag = False
                     self.pump_candidate_list = []  
-                    self.pump_candidate_set = set()
+                    
                 self.tg_response_allow= False
                 await asyncio.sleep(1)  
+
+            if return_webSocket.done() and return_webSocket.result():
+                self.data_updating_flag = False
+                self.websocket_launch_flag = False
                     
             await asyncio.sleep(2)  
             print('await asyncio.sleep(2)')
