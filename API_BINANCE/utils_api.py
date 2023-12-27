@@ -2,7 +2,7 @@ from API_BINANCE.delete_api import DELETEE_API
 from RISK.tp_sl_1 import RISK_MANAGEMENT
 import logging, os, inspect
 
-logging.basicConfig(filename='config_log.log', level=logging.ERROR)
+logging.basicConfig(filename='config_log.log', level=logging.DEBUG)
 current_file = os.path.basename(__file__)
 
 class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
@@ -20,7 +20,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             current_price = self.HTTP_request(url, method=method, params=params)    
             current_price = float(current_price["price"])
         except Exception as ex:
-            print(ex)
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         return current_price  
 
@@ -69,13 +69,13 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         try:
             symbol_info = self.get_excangeInfo(symbol)
         except Exception as ex:
-            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")   
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
 
         if symbol_info:
             try:
                 symbol_data = next((item for item in symbol_info["symbols"] if item['symbol'] == symbol), None)
             except Exception as ex:
-                logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
             
         if symbol_data:            
             try:                
@@ -86,13 +86,13 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 min_qnt = float(symbol_data['filters'][1]['minQty'])
                 max_qnt = float(symbol_data['filters'][1]['maxQty'])
             except Exception as ex:
-                logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
         
             try:
                 tick_size = self.count_multipliter_places(tick_size)
                 print(f"tick_size: {tick_size}")
             except Exception as ex:
-                print(ex) 
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
             
             try:
                 min_depo = min_qnt * price           
@@ -107,7 +107,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 # print(f"{symbol}:  {quantity, recalc_depo, price_precision, tick_size}")
                     
             except Exception as ex:
-                logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         return quantity, recalc_depo, price_precision, tick_size
     
@@ -122,18 +122,19 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         try:
             lev_size = self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
         except Exception as ex:
-            print(ex)
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
         try:
             lev = self.set_leverage(symbol, lev_size)     
             print(f"lev: {lev}")               
         except Exception as ex:
-            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
-        if lev and 'leverage' in lev and lev['leverage'] == self.LEVERAGE:
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+        if lev and 'leverage' in lev and lev['leverage'] == lev_size:
             enter_deJure_price = itemm["current_price"]
             try:                    
-                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = self.calc_qnt_func(symbol, enter_deJure_price, self.DEPO)            
+                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = self.calc_qnt_func(symbol, enter_deJure_price, self.depo)            
             except Exception as ex:
-                logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
             print(f"itemm['qnt'] before: {itemm['qnt']}") 
             if itemm['qnt']:
                 # try:
@@ -150,7 +151,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                     open_market_order, success_flag = self.make_order(itemm, is_closing, target_price, market_type)
                     print(f"open_market_order:  {open_market_order}") 
                 except Exception as ex:
-                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex} \n {open_market_order}")
+                    logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
                 if success_flag:                
                     try:
                         itemm["enter_deFacto_price"] = self.get_current_price(symbol)
@@ -159,7 +160,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                         itemm["in_position"] = True
                         
                     except Exception as ex:
-                        logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                        logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n{open_market_order}")
 
         return itemm
 
@@ -189,7 +190,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 itemm["done_level"] = 2            
         
         except Exception as ex:
-            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n {open_static_tp_order}")
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n{open_static_tp_order}")
 
         return itemm 
     

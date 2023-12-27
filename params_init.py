@@ -86,7 +86,7 @@ class INDICATRS_SETTINGS(FILTER_SET):
 
         # websocket params:
         # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
-        self.PRICE_KLINE_1M_MULTIPLITER = 1.0
+        self.PRICE_KLINE_1M_MULTIPLITER = 2.0
         self.VOLUME_KLINE_1M_MULTIPLITER = 2.1 # volum multipliter/1min
         self.INTERVAL_CLOSEPRICE_MONITORING = 30 # sec  
 
@@ -129,7 +129,7 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.close_position_redirect_flag = False
         self.LEVERAGE = 4
         self.static_TP_flag = True 
-        self.DEPO = 9
+        self.depo = 9
         self.atr_multipliter = 4
         # self.TP_rate = int(self.atr_multipliter * 1.5)
         self.TP_rate = 4

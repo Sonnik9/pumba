@@ -43,6 +43,7 @@ class POSTT_API(GETT_API):
 
         params = self.get_signature(params)
         response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        print(response)
         if response and 'status' in response and response['status'] == 'NEW':
             success_flag = True
 

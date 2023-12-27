@@ -89,6 +89,7 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
         try:
             symbol = item["symbol"] = message.text.split(' ')[0].strip().upper() + 'USDT'       
             item["defender"] = int(message.text.split(' ')[1].strip())
+            self.depo = int(message.text.split(' ')[2].strip())
             item['in_position'] = False
             item['qnt'] = None 
             item["recalc_depo"] = None 
