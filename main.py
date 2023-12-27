@@ -122,82 +122,101 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
             print(f"main121: {ex}")
         return None
        
-    async def go_tgButton_handler(self, message):                
-        cur_time = time.time()
-        date_of_the_month_start = await self.date_of_the_month()       
 
-        while True:            
-            last_update_time = time.time() - cur_time              
-            
-            if (cur_time - last_update_time)/5 >= 1:    
-                async with self.lock_candidate_coins: 
-                    if (self.stop_bot_flag) and ((self.go_progression == 0) or 
-                        (self.go_progression == 1 and self.stop_squeezeAddition_func_flag) or 
-                        (self.go_progression == 2 and self.websocket_stop_returned_flag)):    
-                        self.go_progression = 0  
-                        self.stop_bot_flag = False                                        
-                        return "The robot was stopped!"               
+        # if (cur_time - last_update_time)/60 >= 1:    
+        #     try:
+        #         async with asyncio.gather(*tasks) as task_gathered:
+        #             # Ваш основной код здесь
+
+        #             # Останавливаем все задачи и ждем некоторое время
+        #             for task in task_gathered:
+        #                 task.cancel()
+        #             await asyncio.sleep(1)  # Подождать некоторое время, чтобы задачи завершились
+
+        #     except asyncio.CancelledError:
+        #         # Обрабатываем отмену задач
+        #         pass
+
+        #     finally:
+        #         # Завершаем цикл
+        #         asyncio.get_event_loop().stop()
+
+    async def go_tgButton_handler(self, message):
+        cur_time = time.time()
+        date_of_the_month_start = await self.date_of_the_month()
+        squeeze_task = None
+        web_socket_task = None
+
+        while True:
+            last_update_time = time.time() - cur_time
+
+            if (cur_time - last_update_time) / 3 >= 1:
+                async with self.lock_candidate_coins:
+                    if (self.stop_bot_flag) and ((self.go_progression == 0) or
+                                                (self.go_progression == 1 and self.stop_squeezeAddition_func_flag) or
+                                                (self.go_progression == 2 and self.websocket_stop_returned_flag)):
+                        self.go_progression = 0
+                        self.stop_bot_flag = False
+                        return "The robot was stopped!"
 
             if not self.data_updating_flag:
                 self.go_progression += 1
-                self.coins_in_squeezeOn = []  
-                self.data_updating_flag = True 
-                self.coins_in_squeezeOn, self.stop_squeezeAddition_func_flag = await self.squeeze_unMomentum_addition()                                   
-                just_squeeze_symbol_list = [x["symbol"] for x in self.coins_in_squeezeOn]                      
-                print(f"Монеты в сжатии: {just_squeeze_symbol_list}\n {len(self.coins_in_squeezeOn)} шт")                         
+                self.coins_in_squeezeOn = []
+                self.data_updating_flag = True
+                squeeze_task = asyncio.ensure_future(self.squeeze_unMomentum_addition())
+
+            if squeeze_task and squeeze_task.done():
+                self.coins_in_squeezeOn, self.stop_squeezeAddition_func_flag = squeeze_task.result()
+                just_squeeze_symbol_list = [x["symbol"] for x in self.coins_in_squeezeOn]
+                print(f"Монеты в сжатии: {just_squeeze_symbol_list}\n {len(self.coins_in_squeezeOn)} шт")
 
             if not self.websocket_launch_flag:
                 if self.stop_squeezeAddition_func_flag != "Stop data_updating_func":
                     if self.coins_in_squeezeOn:
                         self.go_progression += 1
                         self.websocket_launch_flag = True
-                        tasks = [self.websocket_handler(self.coins_in_squeezeOn)]
-                        return_webSocket = asyncio.gather(*tasks)
-                    
-                    else:
-                        self.data_updating_flag = False
-                        self.websocket_launch_flag = False
-                        await asyncio.sleep(61)
+                        web_socket_task = asyncio.ensure_future(self.websocket_handler(self.coins_in_squeezeOn))
 
-                    
-            async with self.lock_candidate_coins:  
-                if self.websocket_pump_returned_flag:                            
-                    self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
-                    last_update_time = time.time() - cur_time  
-                    duration = round(last_update_time/60, 2)
+            if web_socket_task and web_socket_task.done():
+                results_of_task_for_websocket = web_socket_task.result()
+                if True in results_of_task_for_websocket:
+                    self.data_updating_flag = False
+                    self.websocket_launch_flag = False
+
+            async with self.lock_candidate_coins:
+                if self.websocket_pump_returned_flag:
+                    self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(
+                        self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
+                    last_update_time = time.time() - cur_time
+                    duration = round(last_update_time / 60, 2)
                     cur_time = time.time()
-                    self.tg_response_allow = True    
+                    self.tg_response_allow = True
 
             if self.tg_response_allow:
-                response_textt = ""  
+                response_textt = ""
 
                 for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
-                    # volum_confirma = await self.volume_confirmation(symbol)
-                    # if volum_confirma:                    
                     signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
                     link = f"https://www.coinglass.com/tv/Binance_{symbol}"
                     if defender == "PUMP":
                         defini_emoji_var = upper_trigon_emoji
                     else:
                         defini_emoji_var = lower_trigon_emoji
-                    response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{clock_emoji} ___ {curTimee}\n{defini_emoji_var} ___ {defender}\n{percent_emoji} ___ {cur_per_change}\n{film_emoji} ___ {duration} min\n{repeat_emoji} ___ {signal_number}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
-                if response_textt:
-                    message.text = self.connector_func(message, response_textt)                    
-                async with self.lock_candidate_coins: 
-                    self.websocket_pump_returned_flag = False
-                    self.pump_candidate_list = []  
-                    
-                self.tg_response_allow= False
-                await asyncio.sleep(1)  
+                response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{clock_emoji} ___ {curTimee}\n{defini_emoji_var} ___ {defender}\n{percent_emoji} ___ {cur_per_change}\n{film_emoji} ___ {duration} min\n{repeat_emoji} ___ {signal_number}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
 
-            if return_webSocket.done():
-                results_ofTask_forWebsocket = return_webSocket.result()
-                if True in results_ofTask_forWebsocket:
-                    self.data_updating_flag = False
-                    self.websocket_launch_flag = False
+                if response_textt:
+                    message.text = self.connector_func(message, response_textt)
                     
-            await asyncio.sleep(2)  
+                async with self.lock_candidate_coins:
+                    self.websocket_pump_returned_flag = False
+                    self.pump_candidate_list = []
+
+            self.tg_response_allow = False
+            await asyncio.sleep(1)
             print('await asyncio.sleep(2)')
+
+
+            
     
              
 class TG_MANAGER(TG_BUTTON_HANDLER):
@@ -214,9 +233,11 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
 
         @self.bot.message_handler(func=lambda message: message.text == 'RESTART')
         def handle_start(message):
-
+            if self.go_inProcess_flag:
+                self.stop_bot_flag = True
             self.init_itits()
             self.bot.send_message(message.chat.id, "Bot restart. Please, choose an option!:", reply_markup=self.menu_markup)
+            self.stop_bot_flag = False 
 
         @self.bot.message_handler(func=lambda message: message.text == "SETTINGS")
         def settingss(message):            
@@ -238,11 +259,13 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
 
         @self.bot.message_handler(func=lambda message: message.text == "GO")
         def go(message):
+            self.go_inProcess_flag = True
             self.init_itits()
             response_message = "Please wait. It's gonna take some time...."
             message.text = self.connector_func(message, response_message)
             self.launch_finish_text = asyncio.run(self.go_tgButton_handler(message))
             message.text = self.connector_func(message, self.launch_finish_text)
+            self.go_inProcess_flag = False
 
         @self.bot.message_handler(func=lambda message: message.text == "OPEN_ORDER")
         def open_order(message):

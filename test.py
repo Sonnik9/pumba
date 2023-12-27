@@ -1,143 +1,46 @@
-# import asyncio
+# import requests
+# import hashlib
+# import time
 
-# async def foo2():
-#     print('foo2')
-#     counter = 0
-#     while True:
-#         await asyncio.sleep(1)
-#         print('tik!')
-#         counter += 1
-#         if counter == 5:
-#             return 'slkdfjvn'
+# api_key = "96f214ce691b0dd8fc65b23002ee4e5ce0b55684598645c2eb2d0a819a6d387a"
+# api_secret = "46e1372c84151cd7d486a4734cc21023ba1724d067b5967ce48ce769025cf0d2"
+# symbol = 'BTCUSDT'
+# margin_type = 'ISOLATED'  # 'CROSSED' для кросс-маржи
 
-# async def foo():
-#     start_flag = False
-#     return_foo2 = None
-#     while True:
-#         await asyncio.sleep(1)
-#         if not start_flag:
-#             loop = asyncio.get_event_loop()
-#             return_foo2 = loop.create_task(foo2())
-#             # Можно также использовать asyncio.create_task(foo2())
-#             start_flag = True
-#         print(return_foo2)
-        
-#         if return_foo2 and return_foo2.done():
-#             result = return_foo2.result()
-#             if result == 'slkdfjvn':
-#                 print('It is success!!')
-#                 return
+# # Вспомогательная функция для подписи запроса
+# def generate_signature(params):
+#     query_string = '&'.join([f'{key}={params[key]}' for key in sorted(params.keys())])
+#     return hashlib.sha256(query_string.encode('utf-8')).hexdigest()
 
-# asyncio.run(foo())
+# # Создаем запрос для изменения типа маржи
+# timestamp = int(time.time() * 1000)
+# params = {
+#     'timestamp': timestamp,
+#     'symbol': symbol,
+#     'type': margin_type,  # Заменил 'marginType' на 'type'
+#     'newClientOrderId': 'CHANGE_MARGIN_TYPE',
+#     'recvWindow': 5000,
+#     'signature': '',
+# }
 
+# params['signature'] = generate_signature(params)
 
-# import asyncio
+# url = 'https://testnet.binancefuture.com/fapi/v1/marginType'
+# response = requests.post(url, params=params, headers={'X-MBX-APIKEY': api_key})
 
-# async def foo2():
-#     print('foo2')
-#     counter = 0
-#     while True:
-#         await asyncio.sleep(1)
-#         print('tik!')
-#         counter += 1
-#         if counter == 5:
-#             return 'slkdfjvn'
+# if response.status_code == 200:
+#     print('Тип маржи успешно изменен.')
+#     print(response.json())
+# else:
+#     print(f'Ошибка при изменении типа маржи: {response.text}')
 
-# async def foo():
-#     start_flag = False
-#     while True:
-#         await asyncio.sleep(1)
-#         if not start_flag:
-#             tasks = [foo2()]
-#             return_foo2 = asyncio.gather(*tasks)
-#             start_flag = True
-#         print(return_foo2)
+# import logging, os, inspect
 
-#         if return_foo2.done():
-#             results = return_foo2.result()
-#             if 'slkdfjvn' in results:
-#                 print('It is success!!')
-#                 return
+# logging.basicConfig(filename='config_log.log', level=logging.INFO)
+# current_file = os.path.basename(__file__)
 
-# asyncio.run(foo())
-
-
-import asyncio
-
-async def foo2():
-    print('foo2')
-    counter = 0
-    while True:
-        await asyncio.sleep(1)
-        print('tik!')
-        counter += 1
-        if counter == 5:
-            return True
-
-async def foo():
-    start_flag = False
-    while True:
-        await asyncio.sleep(1)
-        if not start_flag:
-            tasks = [foo2()]
-            return_foo2 = asyncio.gather(*tasks)
-            start_flag = True
-
-        # Проверка, завершилась ли задача
-        if return_foo2.done():
-            results = return_foo2.result()
-            if True in results:
-                print('It is success!!')
-                print(results[0])
-                return results[0]  # Извлекаем результат из списка
-
-asyncio.run(foo())
-
-
-# import asyncio
-
-# async def foo2():
-#     print('foo2')
-#     counter = 0
-#     while True:
-#         await asyncio.sleep(1)
-#         print('tik!')
-#         counter += 1
-#         if counter == 5:
-#             return ['slkdfjvn']
-
-# async def foo():
-#     start_flag = False
-#     while True:
-#         await asyncio.sleep(1)
-#         if not start_flag:
-#             tasks = [foo2()]
-#             return_foo2 = asyncio.gather(*tasks)
-#             start_flag = True
-
-#         # Проверка, завершилась ли задача
-#         if return_foo2.done():
-#             results = return_foo2.result()
-
-            
-#             if isinstance(results, list):
-#                 print('It is a list!!')
-
-                
-#                 if all(isinstance(item, list) for item in results):
-#                     print('All items in the list are lists.')
-#                 print(results[0])
-#                 return  
-
-# asyncio.run(foo())
-
-# original_a = list(range(6))
-# a = original_a.copy()
-
-# for i in reversed(range(len(a))):
-#     original_a.pop(i)
-#     print(len(original_a))
-
-# # Теперь original_a - это пустой список, а a остался без изменений
-# print(original_a)
-# print(a)
+# try:
+#     a = 'kbgv'
+#     b = int(a)
+# except Exception as ex:
+#     logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")

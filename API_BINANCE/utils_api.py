@@ -2,7 +2,7 @@ from API_BINANCE.delete_api import DELETEE_API
 from RISK.tp_sl_1 import RISK_MANAGEMENT
 import logging, os, inspect
 
-logging.basicConfig(filename='config_log.log', level=logging.DEBUG)
+logging.basicConfig(filename='config_log.log', level=logging.INFO)
 current_file = os.path.basename(__file__)
 
 class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
@@ -30,18 +30,21 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         all_tickers = []
         
         exclusion_contains_list = ['UP', 'DOWN', 'RUB', 'EUR']
-        all_tickers = self.get_all_tickers()
+        try:
+            all_tickers = self.get_all_tickers()
 
-        if all_tickers:
-            usdt_filtered = [ticker for ticker in all_tickers if
-                            ticker['symbol'].upper().endswith('USDT') and
-                            not any(exclusion in ticker['symbol'].upper() for exclusion in exclusion_contains_list) and
-                            (float(ticker['lastPrice']) >= self.MIN_FILTER_PRICE) and (float(ticker['lastPrice']) <= self.MAX_FILTER_PRICE)]
+            if all_tickers:
+                usdt_filtered = [ticker for ticker in all_tickers if
+                                ticker['symbol'].upper().endswith('USDT') and
+                                not any(exclusion in ticker['symbol'].upper() for exclusion in exclusion_contains_list) and
+                                (float(ticker['lastPrice']) >= self.MIN_FILTER_PRICE) and (float(ticker['lastPrice']) <= self.MAX_FILTER_PRICE)]
 
-            sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
-            sorted_by_volume_data = sorted_by_volume_data[:self.SLICE_VOLUME_PAIRS]           
+                sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
+                sorted_by_volume_data = sorted_by_volume_data[:self.SLICE_VOLUME_PAIRS]           
 
-            top_pairs = [x['symbol'] for x in sorted_by_volume_data if x['symbol'] not in self.problem_pairs]
+                top_pairs = [x['symbol'] for x in sorted_by_volume_data if x['symbol'] not in self.problem_pairs]
+        except Exception as ex:
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         return top_pairs
     
@@ -119,6 +122,12 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         defender = itemm["defender"]
         atr = itemm["atr"]
         entry_price = itemm["current_price"]
+        try:
+            changing_margin_type = self.set_margin_type(symbol)
+            print(changing_margin_type)
+        except Exception as ex:
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
         try:
             lev_size = self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
         except Exception as ex:

@@ -40,6 +40,7 @@ class URL_TEMPLATES(BASIC_PARAMETRS):
             self.URL_PATTERN_DICT['positions_url'] = 'https://fapi.binance.com/fapi/v2/positionRisk'
             self.URL_PATTERN_DICT["set_leverage_url"] = 'https://fapi.binance.com/fapi/v1/leverage'
             self.URL_PATTERN_DICT["klines_url"] = 'https://fapi.binance.com/fapi/v1/klines'
+            self.URL_PATTERN_DICT["set_margin_type_url"] = 'https://fapi.binance.com/fapi/v1/marginType'
 
         else:
             print('futures test')
@@ -53,6 +54,7 @@ class URL_TEMPLATES(BASIC_PARAMETRS):
             self.URL_PATTERN_DICT['positions_url'] = 'https://testnet.binancefuture.com/fapi/v2/positionRisk'
             self.URL_PATTERN_DICT["set_leverage_url"] = 'https://testnet.binancefuture.com/fapi/v1/leverage'
             self.URL_PATTERN_DICT["klines_url"] = 'https://testnet.binancefuture.com/fapi/v1/klines'
+            self.URL_PATTERN_DICT["set_margin_type_url"] = 'https://testnet.binancefuture.com/fapi/v1/marginType'
 
     
 class TIME_TEMPLATES(URL_TEMPLATES):   
@@ -118,7 +120,8 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
         self.coins_in_squeezeOn = []   
 
         self.stop_squeezeAddition_func_flag = None 
-
+        
+        self.go_inProcess_flag = False
         self.go_progression = 0
 
 class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
@@ -127,7 +130,8 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.order_triger = False 
         self.open_order_redirect_flag = False
         self.close_position_redirect_flag = False
-        self.LEVERAGE = 4
+        self.margin_type = 'ISOLATED' # 'CROSS'
+        self.leverage = 4
         self.static_TP_flag = True 
         self.depo = 9
         self.atr_multipliter = 4

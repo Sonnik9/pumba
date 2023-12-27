@@ -4,7 +4,20 @@ method = 'POST'
 class POSTT_API(GETT_API):
 
     def __init__(self) -> None:        
-        super().__init__()    
+        super().__init__()  
+
+    def set_margin_type(self, symbol):
+        
+        params = {}
+        url = self.URL_PATTERN_DICT["set_margin_type_url"]
+        params['symbol'] = symbol
+        params['margintype'] = self.margin_type
+        params['recvWindow'] = 5000
+        params['newClientOrderId'] = 'CHANGE_MARGIN_TYPE'       
+        params = self.get_signature(params)
+        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        
+        return response   
 
     def set_leverage(self, symbol, lev_size):
         
@@ -43,11 +56,17 @@ class POSTT_API(GETT_API):
 
         params = self.get_signature(params)
         response = self.HTTP_request(url, method=method, headers=self.header, params=params)
-        print(response)
+        # print(response)
         if response and 'status' in response and response['status'] == 'NEW':
             success_flag = True
 
         return response, success_flag
     
 # post_apii = POSTT_API()
+# # symbol = 'MATICUSDT'
+# symbol = 'SOLUSDT'
+# rec = post_apii.set_margin_type(symbol)
+# print(rec)
+# rec = post_apii.set_leverage(symbol, 4)
+# print(rec)
 
