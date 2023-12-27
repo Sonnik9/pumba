@@ -62,36 +62,36 @@
 # asyncio.run(foo())
 
 
-# import asyncio
+import asyncio
 
-# async def foo2():
-#     print('foo2')
-#     counter = 0
-#     while True:
-#         await asyncio.sleep(1)
-#         print('tik!')
-#         counter += 1
-#         if counter == 5:
-#             return 'slkdfjvn'
+async def foo2():
+    print('foo2')
+    counter = 0
+    while True:
+        await asyncio.sleep(1)
+        print('tik!')
+        counter += 1
+        if counter == 5:
+            return True
 
-# async def foo():
-#     start_flag = False
-#     while True:
-#         await asyncio.sleep(1)
-#         if not start_flag:
-#             tasks = [foo2()]
-#             return_foo2 = asyncio.gather(*tasks)
-#             start_flag = True
+async def foo():
+    start_flag = False
+    while True:
+        await asyncio.sleep(1)
+        if not start_flag:
+            tasks = [foo2()]
+            return_foo2 = asyncio.gather(*tasks)
+            start_flag = True
 
-#         # Проверка, завершилась ли задача
-#         if return_foo2.done():
-#             results = return_foo2.result()
-#             if 'slkdfjvn' in results:
-#                 print('It is success!!')
-#                 print(results[0])
-#                 return results[0]  # Извлекаем результат из списка
+        # Проверка, завершилась ли задача
+        if return_foo2.done():
+            results = return_foo2.result()
+            if True in results:
+                print('It is success!!')
+                print(results[0])
+                return results[0]  # Извлекаем результат из списка
 
-# asyncio.run(foo())
+asyncio.run(foo())
 
 
 # import asyncio

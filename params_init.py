@@ -68,7 +68,7 @@ class TIME_TEMPLATES(URL_TEMPLATES):
 class FILTER_SET(TIME_TEMPLATES):
     def __init__(self) -> None:
         super().__init__()
-        self.SLICE_VOLUME_PAIRS = 200 # volums
+        self.SLICE_VOLUME_PAIRS = 100 # volums
          
         # self.SLICE_VOLATILITY = 200 # volatility
         self.MIN_FILTER_PRICE = 0.0001 # min price
@@ -81,7 +81,7 @@ class FILTER_SET(TIME_TEMPLATES):
 class INDICATRS_SETTINGS(FILTER_SET):
     def __init__(self) -> None:
         super().__init__()
-        self.BB_stddev_MULTIPLITER = 2.4
+        self.BB_stddev_MULTIPLITER = 2.0
         self.KC_stddev_MULTIPLITER = 1.5
 
         # websocket params:
@@ -110,6 +110,7 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
 
         self.websocket_stop_returned_flag = False
         self.websocket_pump_returned_flag = False
+        self.coins_in_squeezeOn_cecleEnd = False
         self.tg_response_allow = False
        
         self.data_updating_flag = False

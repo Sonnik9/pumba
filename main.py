@@ -189,9 +189,11 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                 self.tg_response_allow= False
                 await asyncio.sleep(1)  
 
-            if return_webSocket.done() and return_webSocket.result():
-                self.data_updating_flag = False
-                self.websocket_launch_flag = False
+            if return_webSocket.done():
+                results_ofTask_forWebsocket = return_webSocket.result()
+                if True in results_ofTask_forWebsocket:
+                    self.data_updating_flag = False
+                    self.websocket_launch_flag = False
                     
             await asyncio.sleep(2)  
             print('await asyncio.sleep(2)')
