@@ -1,5 +1,6 @@
 from API_BINANCE.delete_api import DELETEE_API 
 from RISK.tp_sl_1 import RISK_MANAGEMENT
+import asyncio
 import logging, os, inspect
 
 logging.basicConfig(filename='config_log.log', level=logging.INFO)
@@ -24,29 +25,55 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 
         return current_price  
 
-# ///////////////////////////////////////////////////////////////////////////////////////        
-    async def assets_filters_1(self):
-        top_pairs = []
-        all_tickers = []
-        
-        exclusion_contains_list = ['UP', 'DOWN', 'RUB', 'EUR']
-        try:
-            all_tickers = self.get_all_tickers()
+# ///////////////////////////////////////////////////////////////////////////////////////   
 
+    async def assets_filters_1(self):
+        all_tickers = []
+        top_pairs = []
+        exclusion_contains_list = ['UP', 'DOWN', 'RUB', 'EUR']
+        
+        all_tickers = await self.get_all_tickers()    
+
+        try:
             if all_tickers:
                 usdt_filtered = [ticker for ticker in all_tickers if
                                 ticker['symbol'].upper().endswith('USDT') and
                                 not any(exclusion in ticker['symbol'].upper() for exclusion in exclusion_contains_list) and
-                                (float(ticker['lastPrice']) >= self.MIN_FILTER_PRICE) and (float(ticker['lastPrice']) <= self.MAX_FILTER_PRICE)]
+                                (float(ticker['lastPrice']) >= self.MIN_FILTER_PRICE) and (
+                                        float(ticker['lastPrice']) <= self.MAX_FILTER_PRICE)]
 
                 sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
-                sorted_by_volume_data = sorted_by_volume_data[:self.SLICE_VOLUME_PAIRS]           
+                sorted_by_volume_data = sorted_by_volume_data[:self.SLICE_VOLUME_PAIRS]
 
                 top_pairs = [x['symbol'] for x in sorted_by_volume_data if x['symbol'] not in self.problem_pairs]
         except Exception as ex:
-            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+            logging.exception(
+                f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         return top_pairs
+     
+    # def assets_filters_1(self):
+    #     top_pairs = []
+    #     all_tickers = []
+        
+    #     exclusion_contains_list = ['UP', 'DOWN', 'RUB', 'EUR']
+    #     try:
+    #         all_tickers = self.get_all_tickers()
+
+    #         if all_tickers:
+    #             usdt_filtered = [ticker for ticker in all_tickers if
+    #                             ticker['symbol'].upper().endswith('USDT') and
+    #                             not any(exclusion in ticker['symbol'].upper() for exclusion in exclusion_contains_list) and
+    #                             (float(ticker['lastPrice']) >= self.MIN_FILTER_PRICE) and (float(ticker['lastPrice']) <= self.MAX_FILTER_PRICE)]
+
+    #             sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
+    #             sorted_by_volume_data = sorted_by_volume_data[:self.SLICE_VOLUME_PAIRS]           
+
+    #             top_pairs = [x['symbol'] for x in sorted_by_volume_data if x['symbol'] not in self.problem_pairs]
+    #     except Exception as ex:
+    #         logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+    #     return top_pairs
     
     # ///////////////////////////////////////////////////////////////////////////
 

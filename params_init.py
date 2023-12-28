@@ -108,18 +108,18 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
 
         
         self.launch_finish_text = None        
-        self.stop_bot_flag = False
+        self.stop_triger_flag = False
 
         self.websocket_stop_returned_flag = False
         self.websocket_pump_returned_flag = False
-        self.coins_in_squeezeOn_cecleEnd = False
+        
         self.tg_response_allow = False
        
         self.data_updating_flag = False
         self.websocket_launch_flag = False
         self.coins_in_squeezeOn = []   
 
-        self.stop_squeezeAddition_func_flag = None 
+        
         
         self.go_inProcess_flag = False
         self.go_progression = 0

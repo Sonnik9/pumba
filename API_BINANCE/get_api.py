@@ -66,11 +66,11 @@ class GETT_API(GETT_API_CCXT):
     def __init__(self) -> None:
         super().__init__()   
         
-    def get_all_tickers(self):
+    async def get_all_tickers(self):
 
         all_tickers = None
         url = self.URL_PATTERN_DICT['all_tikers_url']        
-        all_tickers = self.HTTP_request(url, method=method, headers=self.header)
+        all_tickers = await self.HTTP_request(url, method=method, headers=self.header)
 
         return all_tickers
     

@@ -140,7 +140,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
 
                             async for msg in ws:
                                 print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
-                                print(coins_in_squeezeOn[0])
+                                # print(coins_in_squeezeOn[0])
                                 if ws.closed:
                                     print(f"ws.closed: {ws.closed}")
                                     break  

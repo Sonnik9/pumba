@@ -40,7 +40,7 @@ class CONNECTOR_BINANCEE(CONNECTOR_CCXT):
 
         return params
    
-    def HTTP_request(self, url, **kwards):
+    async def HTTP_request(self, url, **kwards):
 
         response = None
         multipliter = 2
