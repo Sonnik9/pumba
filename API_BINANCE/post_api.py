@@ -6,7 +6,7 @@ class POSTT_API(GETT_API):
     def __init__(self) -> None:        
         super().__init__()  
 
-    def set_margin_type(self, symbol):
+    async def set_margin_type(self, symbol):
         
         params = {}
         url = self.URL_PATTERN_DICT["set_margin_type_url"]
@@ -15,22 +15,22 @@ class POSTT_API(GETT_API):
         params['recvWindow'] = 5000
         params['newClientOrderId'] = 'CHANGE_MARGIN_TYPE'       
         params = self.get_signature(params)
-        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        response = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         
         return response   
 
-    def set_leverage(self, symbol, lev_size):
+    async def set_leverage(self, symbol, lev_size):
         
         params = {}
         url = self.URL_PATTERN_DICT["set_leverage_url"]
         params['symbol'] = symbol
         params['leverage'] = lev_size
         params = self.get_signature(params)
-        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        response = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         
         return response 
     
-    def make_order(self, item, is_closing, target_price, market_type):
+    async def make_order(self, item, is_closing, target_price, market_type):
         
         response = None
         success_flag = False
@@ -55,7 +55,7 @@ class POSTT_API(GETT_API):
         params["side"] = side 
 
         params = self.get_signature(params)
-        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        response = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         # print(response)
         if response and 'status' in response and response['status'] == 'NEW':
             success_flag = True

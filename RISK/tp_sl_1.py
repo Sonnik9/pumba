@@ -8,7 +8,7 @@ class RISK_MANAGEMENT():
     def __init__(self) -> None:
         pass
 
-    def calculate_leverage(self, entry_price, defender, atr, atr_multipliter, risk_limit=0.004):
+    async def calculate_leverage(self, entry_price, defender, atr, atr_multipliter, risk_limit=0.004):
         liquidation_price = entry_price - (defender * atr * atr_multipliter)
         print(f"liquidation_price: {liquidation_price}")
         if defender == 1:
@@ -18,7 +18,7 @@ class RISK_MANAGEMENT():
 
         return abs(int(leverage))
 
-    def static_tp_calc(self, item, tp_ratio):
+    async def static_tp_calc(self, item, tp_ratio):
         
         tp_price = None
         

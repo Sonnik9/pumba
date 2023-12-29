@@ -11,22 +11,6 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
     def __init__(self) -> None:
         super().__init__()
 
-    # ///////////////////////////////////////////////////////////////////
-    def get_current_price(self, symbol):
-        method = 'GET'
-        current_price = None
-        url = self.URL_PATTERN_DICT['current_ptice_url']
-        params = {'symbol': symbol}
-        try:
-            current_price = self.HTTP_request(url, method=method, params=params)    
-            current_price = float(current_price["price"])
-        except Exception as ex:
-            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
-
-        return current_price  
-
-# ///////////////////////////////////////////////////////////////////////////////////////   
-
     async def assets_filters_1(self):
         all_tickers = []
         top_pairs = []
@@ -77,14 +61,14 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
     
     # ///////////////////////////////////////////////////////////////////////////
 
-    def count_multipliter_places(self, number):
+    async def count_multipliter_places(self, number):
         if isinstance(number, (int, float)):
             number_str = str(number)
             if '.' in number_str:
                 return len(number_str.split('.')[1])
         return 0
 
-    def calc_qnt_func(self, symbol, price, depo): 
+    async def calc_qnt_func(self, symbol, price, depo): 
         symbol_info = None
         symbol_data = None 
         price_precision = None
@@ -97,7 +81,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         max_depo = None
         
         try:
-            symbol_info = self.get_excangeInfo(symbol)
+            symbol_info = await self.get_excangeInfo(symbol)
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
 
@@ -119,7 +103,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
         
             try:
-                tick_size = self.count_multipliter_places(tick_size)
+                tick_size = await self.count_multipliter_places(tick_size)
                 print(f"tick_size: {tick_size}")
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
@@ -142,7 +126,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         return quantity, recalc_depo, price_precision, tick_size
     
 # ///////////////////////////////////////////////////////////////////////////////////
-    def make_market_order_temp_func(self, item):
+    async def make_market_order_temp_func(self, item):
         itemm = item.copy()
         atr_multipliter = self.atr_multipliter
         symbol = itemm["symbol"]
@@ -150,25 +134,25 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         atr = itemm["atr"]
         entry_price = itemm["current_price"]
         try:
-            changing_margin_type = self.set_margin_type(symbol)
+            changing_margin_type = await self.set_margin_type(symbol)
             print(changing_margin_type)
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         try:
-            lev_size = self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
+            lev_size = await self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         try:
-            lev = self.set_leverage(symbol, lev_size)     
+            lev = await self.set_leverage(symbol, lev_size)     
             print(f"lev: {lev}")               
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
         if lev and 'leverage' in lev and lev['leverage'] == lev_size:
             enter_deJure_price = itemm["current_price"]
             try:                    
-                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = self.calc_qnt_func(symbol, enter_deJure_price, self.depo)            
+                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = await self.calc_qnt_func(symbol, enter_deJure_price, self.depo)            
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
             print(f"itemm['qnt'] before: {itemm['qnt']}") 
@@ -184,13 +168,13 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 market_type = 'MARKET'
                 target_price = None
                 try:          
-                    open_market_order, success_flag = self.make_order(itemm, is_closing, target_price, market_type)
+                    open_market_order, success_flag = await self.make_order(itemm, is_closing, target_price, market_type)
                     print(f"open_market_order:  {open_market_order}") 
                 except Exception as ex:
                     logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
                 if success_flag:                
                     try:
-                        itemm["enter_deFacto_price"] = self.get_current_price(symbol)
+                        itemm["enter_deFacto_price"] = await self.get_DeFacto_price(symbol)
                         # print(f'str73 {symbol}:  {itemm["enter_deFacto_price"]}  (defacto_prtice)')
                         itemm["done_level"] = 1
                         itemm["in_position"] = True
@@ -200,14 +184,14 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 
         return itemm
 
-    def tp_make_orders(self, item):
+    async def tp_make_orders(self, item):
         itemm = item.copy()
         is_closing = -1
 
         try:           
             success_flag = False   
             tp_ratio = self.TP_rate
-            target_price = self.static_tp_calc(itemm, tp_ratio)
+            target_price = await self.static_tp_calc(itemm, tp_ratio)
             print(f"target_price before transformed: {target_price}")
             # try:
             #     target_price = self.transformed_price(itemm["symbol"], target_price)
@@ -220,7 +204,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             print(f"target_price: {target_price}")
             market_type = 'TAKE_PROFIT_MARKET' 
             
-            open_static_tp_order, success_flag = self.make_order(itemm, is_closing, target_price, market_type)
+            open_static_tp_order, success_flag = await self.make_order(itemm, is_closing, target_price, market_type)
             print(f'open_static_tp_order  {open_static_tp_order}')
             if success_flag:                                     
                 itemm["done_level"] = 2            

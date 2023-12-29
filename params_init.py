@@ -130,10 +130,12 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.order_triger = False 
         self.open_order_redirect_flag = False
         self.close_position_redirect_flag = False
+        self.symbol = None      
+        self.defender = None
+        self.depo = None
         self.margin_type = 'ISOLATED' # 'CROSS'
         self.leverage = 4
-        self.static_TP_flag = True 
-        self.depo = 9
+        self.static_TP_flag = True       
         self.atr_multipliter = 4
         # self.TP_rate = int(self.atr_multipliter * 1.5)
         self.TP_rate = 4

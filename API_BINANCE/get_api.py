@@ -5,6 +5,12 @@ import asyncio
 import time
 from connectorss import CONNECTOR_TG
 
+import logging, os, inspect
+
+logging.basicConfig(filename='config_log.log', level=logging.INFO)
+current_file = os.path.basename(__file__)
+
+
 method = 'GET'
 
 class GETT_API_CCXT(CONNECTOR_TG):
@@ -74,14 +80,14 @@ class GETT_API(GETT_API_CCXT):
 
         return all_tickers
     
-    def get_excangeInfo(self, symbol):       
+    async def get_excangeInfo(self, symbol):       
 
         exchangeInfo = None
         if symbol:            
             url = f"{self.URL_PATTERN_DICT['exchangeInfo_url']}?symbol={symbol}"
         else:
             url = self.URL_PATTERN_DICT['exchangeInfo_url']        
-        exchangeInfo = self.HTTP_request(url, method=method, headers=self.header)
+        exchangeInfo = await self.HTTP_request(url, method=method, headers=self.header)
 
         return exchangeInfo
     
@@ -111,14 +117,30 @@ class GETT_API(GETT_API_CCXT):
             # print(current_balance)
             
         return current_balance
+    
+# ///////////////////////////////////////////////////////////////////
+    async def get_current_price(self, symbol):
+        method = 'GET'
+        current_price = None
+        url = self.URL_PATTERN_DICT['current_ptice_url']
+        params = {'symbol': symbol}
+        try:
+            current_price = await self.HTTP_request(url, method=method, params=params)    
+            current_price = float(current_price["price"])
+        except Exception as ex:
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+        return current_price  
+
+# ///////////////////////////////////////////////////////////////////////////////////////   
         
-    def get_DeFacto_price(self, symbol):       
+    async def get_DeFacto_price(self, symbol):       
 
         positions = None        
         url = self.URL_PATTERN_DICT['positions_url']
         params = {}
         params = self.get_signature(params)
-        positions = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        positions = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         
         positions = float([x for x in positions if x['symbol'] == symbol][0]["entryPrice"])
 

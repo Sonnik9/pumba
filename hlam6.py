@@ -581,3 +581,22 @@ asyncio.run(foo())
     #     while True:
     #         schedule.run_pending()
     #         await asyncio.sleep(1)
+
+
+    # async def stop_tgButton_handler(self, tasks):
+    #     try:
+    #         await asyncio.gather(*tasks, return_exceptions=True)
+    #     except asyncio.CancelledError:            
+    #         pass
+    #     finally:
+    #         await asyncio.sleep(3)
+    #         # Возможно, вам не нужно явно останавливать цикл событий
+    #         # asyncio.get_event_loop().stop()
+    #         return True
+
+
+                                # current_time = time.time()
+                                # if ((current_time - last_update_time)/7 >= 1):
+                                #     async with self.lock_candidate_coins: 
+                                #         if self.stop_bot_flag:                                        
+                                #             return True

@@ -100,6 +100,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
         url = 'wss://stream.binance.com:9443/stream?streams='  
         coins_in_squeezeOn = coins_in_squeezeOn_arg.copy()
         cur_price_agregated_compearer_5_CONSTANTS = [{"symbol": y["symbol"], "cur_price_agregated_compearer_5": y["cur_price_agregated_compearer_5"]} for y in coins_in_squeezeOn_arg]
+        self.pump_candidate_busy_list = []
         print(coins_in_squeezeOn)
         
         try:
@@ -139,16 +140,14 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                 pass  
 
                             async for msg in ws:
+                                current_time = time.time()
                                 print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
                                 # print(coins_in_squeezeOn[0])
+                                if self.stop_triger_flag:
+                                    return
                                 if ws.closed:
                                     print(f"ws.closed: {ws.closed}")
-                                    break  
-                                current_time = time.time()
-                                if ((current_time - last_update_time)/7 >= 1):
-                                    async with self.lock_candidate_coins: 
-                                        if self.stop_bot_flag:                                        
-                                            return True
+                                    break
 
                                 if per_change_conditionTrue_flag:
                                     self.websocket_pump_returned_flag = True
