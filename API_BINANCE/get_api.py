@@ -1,5 +1,6 @@
 # import time
 # import random
+from datetime import datetime
 import pandas as pd
 import asyncio
 import time
@@ -124,8 +125,11 @@ class GETT_API(GETT_API_CCXT):
         current_price = None
         url = self.URL_PATTERN_DICT['current_ptice_url']
         params = {'symbol': symbol}
+        print(f"symbol: {symbol}")
         try:
-            current_price = await self.HTTP_request(url, method=method, params=params)    
+            current_price = await self.HTTP_request(url, method=method, params=params) 
+            # print(current_price)  
+            # current_price = float([x['price'] for x in current_price if x['symbol'] == symbol])
             current_price = float(current_price["price"])
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
@@ -158,7 +162,7 @@ class GETT_API(GETT_API_CCXT):
 
         return all_orders
     
-    def get_open_positions(self):
+    async def get_open_positions(self):
        
         all_positions = None        
         params = {}          
@@ -167,18 +171,25 @@ class GETT_API(GETT_API_CCXT):
         if symbol:
             params["symbol"] = symbol
         params = self.get_signature(params)
-        all_positions = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        all_positions = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         all_positions = [x for x in all_positions if float(x["positionAmt"]) != 0]
+        all_positions = await self.format_positions_data(all_positions)
 
         return all_positions 
+    
+
 # # //////////////////////////////////////////////////////////////////////////////////
 
-get_apii = GETT_API()
-symbol = 'BNBUSDT'
-# # klines = get_apii.get_klines(symbol, 100)
-# # print(klines)
-# # price = get_apii.get_current_price(symbol)
-# # print(price)#
+# get_apii = GETT_API()
+# symbol = 'BNBUSDT'
+# symbol = 'SOLUSDT'
+# # # klines = get_apii.get_klines(symbol, 100)
+# # # print(klines)
+# price = asyncio.run(get_apii.get_current_price(symbol))
+# open_pos = asyncio.run(get_apii.get_open_positions())
+# print(open_pos)
+# print(price)
+
 
 # # # python -m API_BINANCE.get_api
     

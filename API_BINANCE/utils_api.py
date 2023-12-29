@@ -1,5 +1,6 @@
 from API_BINANCE.delete_api import DELETEE_API 
 from RISK.tp_sl_1 import RISK_MANAGEMENT
+from datetime import datetime
 import asyncio
 import logging, os, inspect
 
@@ -213,6 +214,48 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n{open_static_tp_order}")
 
         return itemm 
+    
+    # ///////////////////////////////////////////////////////////////////////////////
+    async def positions_info(self):
+        positions_data = None
+        positions_data = await self.get_open_positions()
+        try:
+            if len(positions_data) != 0:
+                positions_data = await self.format_positions_data(self, positions_data)
+            else:
+                pass
+
+        except Exception as ex:
+            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n{positions_data}")
+
+
+        return positions_data
+
+    async def format_positions_data(self, positions_data):
+        formatted_data = ""
+        for position in positions_data:
+            formatted_data += f"Symbol: {position['symbol']}\n"
+            formatted_data += f"Position Amount: {position['positionAmt']}\n"
+            formatted_data += f"Entry Price: {position['entryPrice']}\n"
+            formatted_data += f"Break-Even Price: {position['breakEvenPrice']}\n"
+            formatted_data += f"Mark Price: {position['markPrice']}\n"
+            formatted_data += f"Unrealized Profit: {position['unRealizedProfit']}\n"
+            formatted_data += f"Liquidation Price: {position['liquidationPrice']}\n"
+            formatted_data += f"Leverage: {position['leverage']}\n"
+            formatted_data += f"Max Notional Value: {position['maxNotionalValue']}\n"
+            formatted_data += f"Margin Type: {position['marginType']}\n"
+            formatted_data += f"Isolated Margin: {position['isolatedMargin']}\n"
+            formatted_data += f"Auto Add Margin: {position['isAutoAddMargin']}\n"
+            formatted_data += f"Position Side: {position['positionSide']}\n"
+            formatted_data += f"Notional: {position['notional']}\n"
+            formatted_data += f"Isolated Wallet: {position['isolatedWallet']}\n"
+            formatted_data += f"Update Time: {datetime.utcfromtimestamp(position['updateTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')}\n"
+            formatted_data += f"Isolated: {position['isolated']}\n"
+            formatted_data += f"ADL Quantile: {position['adlQuantile']}\n\n"
+
+        return formatted_data.strip()
+    
+    # ///////////////////////////////////////////////////////////////////////////////
     
     # /////////////////////////////////////////////////////////////////////////////////////////////////////
 

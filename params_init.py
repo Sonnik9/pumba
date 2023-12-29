@@ -44,7 +44,7 @@ class URL_TEMPLATES(BASIC_PARAMETRS):
 
         else:
             print('futures test')
-            self.URL_PATTERN_DICT['current_ptice_url'] = "https://fapi.binance.com/fapi/v1/ticker/price"
+            self.URL_PATTERN_DICT['current_ptice_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/price"
             self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
             self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
             self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
@@ -140,6 +140,8 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         # self.TP_rate = int(self.atr_multipliter * 1.5)
         self.TP_rate = 4
         self.DIVERCIFICATION_NUMDER = 9
+
+        self.info_triger = False
 
 class INIT_PARAMS(OPEN_ORDER_PARAMS):
     def __init__(self) -> None:

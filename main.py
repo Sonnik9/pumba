@@ -99,6 +99,8 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
         item = {}  
         open_order_returned_list = []
         try:
+            item["symbol"] = self.symbol 
+            item["defender"] = self.defender
 
             item['in_position'] = False
             item['qnt'] = None 
@@ -150,6 +152,8 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
         return_squeeze_unMomentum_assignator = None
         return_open_order_tgButton_handler = None
         answer_open_order_tgButton_handler = None
+        return_info_tgButton_handler = None 
+
         tasks = []        
 
         while True:
@@ -165,84 +169,109 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                         print('Please, wait a little bit!')
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
-                # /////////////////////////////////////////////////////////////////////////////////////
-                if not self.data_updating_flag:
-                    self.go_progression += 1
-                    self.coins_in_squeezeOn = []
-                    return_squeeze_unMomentum_assignator = None
-                    self.data_updating_flag = True
-                    task1 = [self.squeeze_unMomentum_assignator()]
-                    tasks.append(task1)
-                    return_squeeze_unMomentum_assignator = asyncio.gather(*task1)
-                    return_web_socket_task = None  # Задача для веб-сокетов создается при необходимости
+                # # /////////////////////////////////////////////////////////////////////////////////////
+                # if not self.data_updating_flag:
+                #     self.go_progression += 1
+                #     self.coins_in_squeezeOn = []
+                #     return_squeeze_unMomentum_assignator = None
+                #     self.data_updating_flag = True
+                #     task1 = [self.squeeze_unMomentum_assignator()]
+                #     tasks.append(task1)
+                #     return_squeeze_unMomentum_assignator = asyncio.gather(*task1)
+                #     return_web_socket_task = None  # Задача для веб-сокетов создается при необходимости
 
-                print(f"self.go_progression: {self.go_progression}")
+                # print(f"self.go_progression: {self.go_progression}")
 
-                if return_squeeze_unMomentum_assignator and return_squeeze_unMomentum_assignator.done():
-                    result_squeeze_unMomentum_assignator = return_squeeze_unMomentum_assignator.result()
-                    self.coins_in_squeezeOn = result_squeeze_unMomentum_assignator[0]
-                    just_squeeze_symbol_list = [x["symbol"] for x in self.coins_in_squeezeOn]
-                    print(f"Монеты в сжатии: {just_squeeze_symbol_list}\n {len(self.coins_in_squeezeOn)} шт")
-                    return_squeeze_unMomentum_assignator = None 
-                    self.websocket_launch_flag = True
-                # /////////////////////////////////////////////////////////////////////////////////////
+                # if return_squeeze_unMomentum_assignator and return_squeeze_unMomentum_assignator.done():
+                #     result_squeeze_unMomentum_assignator = return_squeeze_unMomentum_assignator.result()
+                #     self.coins_in_squeezeOn = result_squeeze_unMomentum_assignator[0]
+                #     just_squeeze_symbol_list = [x["symbol"] for x in self.coins_in_squeezeOn]
+                #     print(f"Монеты в сжатии: {just_squeeze_symbol_list}\n {len(self.coins_in_squeezeOn)} шт")
+                #     return_squeeze_unMomentum_assignator = None 
+                #     self.websocket_launch_flag = True
+                # # /////////////////////////////////////////////////////////////////////////////////////
                     
-                # /////////////////////////////////////////////////////////////////////////////////////
-                if self.websocket_launch_flag and len(self.coins_in_squeezeOn) !=0:
-                    self.go_progression += 1
-                    self.websocket_launch_flag = False
-                    tasks = []
-                    task2 = [self.websocket_handler(self.coins_in_squeezeOn)]
-                    tasks.append(task2)                    
-                    return_web_socket_task = asyncio.gather(*task2)
+                # # /////////////////////////////////////////////////////////////////////////////////////
+                # if self.websocket_launch_flag and len(self.coins_in_squeezeOn) !=0:
+                #     self.go_progression += 1
+                #     self.websocket_launch_flag = False
+                #     tasks = []
+                #     task2 = [self.websocket_handler(self.coins_in_squeezeOn)]
+                #     tasks.append(task2)                    
+                #     return_web_socket_task = asyncio.gather(*task2)
 
-                elif self.websocket_launch_flag and len(self.coins_in_squeezeOn) == 0:
-                    await asyncio.sleep(21)
-                    self.data_updating_flag = False
+                # elif self.websocket_launch_flag and len(self.coins_in_squeezeOn) == 0:
+                #     await asyncio.sleep(21)
+                #     self.data_updating_flag = False
 
-                print(f"self.go_progression: {self.go_progression}")
+                # print(f"self.go_progression: {self.go_progression}")
 
-                if return_web_socket_task and return_web_socket_task.done():
-                    results_of_task_for_websocket = return_web_socket_task.result()
-                    if True in results_of_task_for_websocket:                        
-                        self.data_updating_flag = False
-                        self.websocket_launch_flag = False
-                        return_web_socket_task = None
+                # if return_web_socket_task and return_web_socket_task.done():
+                #     results_of_task_for_websocket = return_web_socket_task.result()
+                #     if True in results_of_task_for_websocket:                        
+                #         self.data_updating_flag = False
+                #         self.websocket_launch_flag = False
+                #         return_web_socket_task = None
+                # # /////////////////////////////////////////////////////////////////////////////////////
+                        
+                # # /////////////////////////////////////////////////////////////////////////////////////
+                # async with self.lock_candidate_coins:
+                #     if self.websocket_pump_returned_flag:
+                #         self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
+                #         last_duration_time = time.time() - cur_time
+                #         duration = round(last_duration_time / 60, 2)
+                #         cur_time = time.time()
+                #         self.tg_response_allow = True
+
+                # if self.tg_response_allow:
+                #     response_textt = ""
+
+                #     for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
+                #         signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
+                #         link = f"https://www.coinglass.com/tv/Binance_{symbol}"
+                #         if defender == "PUMP":
+                #             defini_emoji_var = upper_trigon_emoji
+                #         else:
+                #             defini_emoji_var = lower_trigon_emoji
+                #         response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{clock_emoji} ___ {curTimee}\n{defini_emoji_var} ___ {defender}\n{percent_emoji} ___ {cur_per_change}\n{film_emoji} ___ {duration} min\n{repeat_emoji} ___ {signal_number}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
+
+                #     if response_textt:
+                #         message.text = self.connector_func(message, response_textt)
+                            
+                #     async with self.lock_candidate_coins:
+                #         self.websocket_pump_returned_flag = False
+                #         self.pump_candidate_list = []
+
+                #     self.tg_response_allow = False
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
                 # /////////////////////////////////////////////////////////////////////////////////////
-                async with self.lock_candidate_coins:
-                    if self.websocket_pump_returned_flag:
-                        self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
-                        last_duration_time = time.time() - cur_time
-                        duration = round(last_duration_time / 60, 2)
-                        cur_time = time.time()
-                        self.tg_response_allow = True
+                if self.info_triger:     
+                    self.info_triger = False                
+                    task4 = [self.positions_info()]
+                    tasks.append(task4)
+                    return_info_tgButton_handler = asyncio.gather(*task4)
 
-                if self.tg_response_allow:
-                    response_textt = ""
+                if return_info_tgButton_handler and return_info_tgButton_handler.done():                    
+                    answer_tg_reply = return_info_tgButton_handler.result()
+                    return_info_tgButton_handler = None   
+                    if answer_tg_reply[0]:                        
+                        info_tg_reply = answer_tg_reply[0]     
+                        message.text = self.connector_func(message, info_tg_reply)
+                    elif answer_tg_reply[0] == []:
+                        info_tg_reply = "There is no one open order"
+                        message.text = self.connector_func(message, info_tg_reply)
+                    elif not answer_tg_reply[0]:
+                        info_tg_reply = "Some problems with getting positions data..."
+                        message.text = self.connector_func(message, info_tg_reply)
 
-                    for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
-                        signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
-                        link = f"https://www.coinglass.com/tv/Binance_{symbol}"
-                        if defender == "PUMP":
-                            defini_emoji_var = upper_trigon_emoji
-                        else:
-                            defini_emoji_var = lower_trigon_emoji
-                        response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{clock_emoji} ___ {curTimee}\n{defini_emoji_var} ___ {defender}\n{percent_emoji} ___ {cur_per_change}\n{film_emoji} ___ {duration} min\n{repeat_emoji} ___ {signal_number}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
 
-                    if response_textt:
-                        message.text = self.connector_func(message, response_textt)
-                            
-                    async with self.lock_candidate_coins:
-                        self.websocket_pump_returned_flag = False
-                        self.pump_candidate_list = []
 
-                    self.tg_response_allow = False
                 # /////////////////////////////////////////////////////////////////////////////////////
 
                 # /////////////////////////////////////////////////////////////////////////////////////
-                if self.order_triger:
+                        
+                if self.order_triger and self.symbol:
                     self.order_triger = False
                     task3 = [self.open_order_tgButton_handler()]
                     tasks.append(task3)
@@ -250,6 +279,9 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                     
                 if return_open_order_tgButton_handler and return_open_order_tgButton_handler.done():
                     answer_open_order_tgButton_handler = return_open_order_tgButton_handler.result()
+                    if 0 in answer_open_order_tgButton_handler[0]:
+                        order_tg_reply = "Some exceptions with placeing order..."
+                        message.text = self.connector_func(message, order_tg_reply)
                     if -1 in answer_open_order_tgButton_handler[0]:
                         order_tg_reply = "Some problem with placeing order..."
                         message.text = self.connector_func(message, order_tg_reply)
@@ -262,12 +294,13 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                     if 2 in answer_open_order_tgButton_handler[0]:
                         order_tg_reply = "The takeProfit was setting successuly!"
                         message.text = self.connector_func(message, order_tg_reply)
+                    return_open_order_tgButton_handler = None
 
 
                 # /////////////////////////////////////////////////////////////////////////////////////
 
                 print("Before sleep")
-                await asyncio.sleep(4)
+                await asyncio.sleep(2)
                 print("After sleep")
 
             except Exception as ex:
@@ -341,25 +374,35 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
             
         @self.bot.message_handler(func=lambda message: self.open_order_redirect_flag)
         def open_order_redirect(message):
+
+            self.symbol = None 
+            self.defender = None
+            self.depo = None
             
-            try:
+            try:              
                 self.symbol = message.text.split(' ')[0].strip().upper() + 'USDT'       
                 self.defender = int(message.text.split(' ')[1].strip())
                 self.depo = int(message.text.split(' ')[2].strip())
+                response_message = "Please waiting..."
+                message.text = self.connector_func(message, response_message)
             except:
                 response_message = "Please enter a valid data. Try again (e.g.: btc 1 9)"
                 message.text = self.connector_func(message, response_message)
 
             self.open_order_redirect_flag = False
-            
 
         @self.bot.message_handler(func=lambda message: message.text == "CLOSE_POSITION")
         def closee_pos(message):               
             response_message = "Please enter a coin(e.g.: btc)"
             message.text = self.connector_func(message, response_message)
-            self.order_triger = True
-            self.close_position_redirect_flag = True   
+            self.info_triger = True           
 
+        @self.bot.message_handler(func=lambda message: message.text == "INFO")
+        def info_pos(message):               
+            response_message = "Please waiting..."
+            message.text = self.connector_func(message, response_message)
+            self.info_triger = True
+            
         @self.bot.message_handler(func=lambda message: message.text not in self.reserved_frathes_list)
         def exceptions_input(message):
             response_message = f"Try again and enter a valid option."
