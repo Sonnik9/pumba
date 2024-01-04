@@ -153,12 +153,12 @@ class GETT_API(GETT_API_CCXT):
 
 # # ////////////////////////////////////////////////////////////////////////////////////
 
-    def get_all_orders(self):
+    async def get_all_orders(self):
         all_orders = None        
         params = {}               
         url = self.URL_PATTERN_DICT['get_all_orders_url']
         params = self.get_signature(params)
-        all_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        all_orders = await self.HTTP_request(url, method=method, headers=self.header, params=params)
 
         return all_orders
     
@@ -173,8 +173,7 @@ class GETT_API(GETT_API_CCXT):
         params = self.get_signature(params)
         all_positions = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         all_positions = [x for x in all_positions if float(x["positionAmt"]) != 0]
-        all_positions = await self.format_positions_data(all_positions)
-
+        
         return all_positions 
     
 

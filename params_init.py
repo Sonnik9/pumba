@@ -128,6 +128,14 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
     def __init__(self) -> None:
         super().__init__()
         self.order_triger = False 
+        self.close_order_triger = False
+        # self.close_position_triger = False
+        self.close_all_orderS_triger = False
+        # self.close_all_positionS_triger = False
+        self.close_pos_redirect_flag = False
+        self.redirect_closee_custom_pos_flag = False
+
+
         self.open_order_redirect_flag = False
         self.close_position_redirect_flag = False
         self.symbol = None      

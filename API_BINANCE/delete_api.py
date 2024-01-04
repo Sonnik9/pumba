@@ -1,5 +1,5 @@
 from API_BINANCE.post_api import POSTT_API
-method = 'DELETE'
+
 
 class DELETEE_API(POSTT_API):
 
@@ -29,8 +29,9 @@ class DELETEE_API(POSTT_API):
             
     #     return cancel_order, success_flag
 
-    def cancel_all_orders_for_position(self, symbol_list):
-        cancel_orders_list = []      
+    async def cancel_all_orders_for_position(self, symbol_list):
+        cancel_orders_list = []  
+        method = 'DELETE'    
 
         for item in symbol_list:
             cancel_order = None
@@ -39,16 +40,17 @@ class DELETEE_API(POSTT_API):
             params = self.get_signature(params)
             url = self.URL_PATTERN_DICT['cancel_all_orders_url']
             
-            cancel_order = self.HTTP_request(url, method=self.method, headers=self.header, params=params)
+            cancel_order = await self.HTTP_request(url, method=method, headers=self.header, params=params)
             cancel_orders_list.append(cancel_order)
             
         return cancel_orders_list
     
-    def cancel_all_open_orders(self):
+    async def cancel_all_open_orders(self):
+        method = 'DELETE'
 
         cancel_orders = None
         all_orders = None
-        all_orders = self.get_all_orders()
+        all_orders = await self.get_all_orders()
 
         for item in all_orders:
             params = {}
@@ -56,7 +58,7 @@ class DELETEE_API(POSTT_API):
             params = self.get_signature(params)
             url = self.URL_PATTERN_DICT['cancel_all_orders_url']
             method = 'DELETE'
-            cancel_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
+            cancel_orders = await self.HTTP_request(url, method=method, headers=self.header, params=params)
             # print(cancel_orders)
 
-        return 
+        return cancel_orders

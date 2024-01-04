@@ -1,5 +1,5 @@
 from API_BINANCE.get_api import GETT_API
-method = 'POST'
+
 
 class POSTT_API(GETT_API):
 
@@ -7,6 +7,7 @@ class POSTT_API(GETT_API):
         super().__init__()  
 
     async def set_margin_type(self, symbol):
+        method = 'POST'
         
         params = {}
         url = self.URL_PATTERN_DICT["set_margin_type_url"]
@@ -20,6 +21,7 @@ class POSTT_API(GETT_API):
         return response   
 
     async def set_leverage(self, symbol, lev_size):
+        method = 'POST'
         
         params = {}
         url = self.URL_PATTERN_DICT["set_leverage_url"]
@@ -31,6 +33,7 @@ class POSTT_API(GETT_API):
         return response 
     
     async def make_order(self, item, is_closing, target_price, market_type):
+        method = 'POST'
         
         response = None
         success_flag = False

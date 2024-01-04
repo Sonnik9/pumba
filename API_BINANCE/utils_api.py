@@ -221,9 +221,9 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         positions_data = await self.get_open_positions()
         try:
             if len(positions_data) != 0:
-                positions_data = await self.format_positions_data(self, positions_data)
+                positions_data = await self.format_positions_data(positions_data)
             else:
-                pass
+                positions_data = []
 
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n{positions_data}")
@@ -246,7 +246,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             formatted_data += f"Margin Type: {position['marginType']}\n"
             formatted_data += f"Isolated Margin: {position['isolatedMargin']}\n"
             formatted_data += f"Auto Add Margin: {position['isAutoAddMargin']}\n"
-            formatted_data += f"Position Side: {position['positionSide']}\n"
+            # formatted_data += f"Position Side: {position['positionSide']}\n"
             formatted_data += f"Notional: {position['notional']}\n"
             formatted_data += f"Isolated Wallet: {position['isolatedWallet']}\n"
             formatted_data += f"Update Time: {datetime.utcfromtimestamp(position['updateTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')}\n"
@@ -256,6 +256,50 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         return formatted_data.strip()
     
     # ///////////////////////////////////////////////////////////////////////////////
+
+    async def close_all_poss(self):
+        positions_data = None
+        cancel_orders_list = None
+        success_closePosition_list = []
+        problem_closePosition_list = []
+        defender_corrector = 1
+        new_positions_data = []
+        positions_data = await self.get_open_positions()
+        if positions_data:
+           for x in positions_data:
+                if float(x['positionAmt']) != 0:
+                    if float(x['positionAmt']) > 0:
+                        defender_corrector = 1
+                    else:
+                        defender_corrector = -1
+                else:
+                    continue
+
+                new_positions_data.append({
+                        "symbol": x['symbol'],
+                        "defender": 1*defender_corrector,
+                        "qnt": abs(x['positionAmt']),
+                    })
+                
+        is_closing = -1
+        target_price = None
+        market_type = 'MARKET'
+        close_resp = False
+        if new_positions_data:
+            for item in new_positions_data:
+                close_resp = await self.make_order(item, is_closing, target_price, market_type)
+                if close_resp:
+                    success_closePosition_list.append(item['symbol'])                    
+                else:
+                    problem_closePosition_list.append(item['symbol'])
+
+        if success_closePosition_list:
+            cancel_orders_list = await self.cancel_all_orders_for_position(success_closePosition_list)                    
+
+        return success_closePosition_list, problem_closePosition_list, cancel_orders_list
+                
+
+    
     
     # /////////////////////////////////////////////////////////////////////////////////////////////////////
 

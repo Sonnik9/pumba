@@ -255,6 +255,7 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                 if return_info_tgButton_handler and return_info_tgButton_handler.done():                    
                     answer_tg_reply = return_info_tgButton_handler.result()
                     return_info_tgButton_handler = None   
+                    print(answer_tg_reply)
                     if answer_tg_reply[0]:                        
                         info_tg_reply = answer_tg_reply[0]     
                         message.text = self.connector_func(message, info_tg_reply)
@@ -268,6 +269,14 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
 
 
                 # /////////////////////////////////////////////////////////////////////////////////////
+                if self.close_order_triger and self.symbol:
+                    pass
+                if self.close_all_orderS_triger:                    
+                    self.close_all_orderS_triger = False
+                    task4 = [self.close_all_poss()]
+                    tasks.append(task4)
+                    return_open_order_tgButton_handler = asyncio.gather(*task4)
+
 
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
@@ -321,10 +330,10 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
         @self.bot.message_handler(func=lambda message: message.text == 'RESTART')
         def handle_start(message):
             if self.go_inProcess_flag:
-                self.stop_bot_flag = True
+                self.stop_triger_flag = True
             self.init_itits()
             self.bot.send_message(message.chat.id, "Bot restart. Please, choose an option!:", reply_markup=self.menu_markup)
-            self.stop_bot_flag = False 
+            self.stop_triger_flag = False 
 
         @self.bot.message_handler(func=lambda message: message.text == "SETTINGS")
         def settingss(message):            
@@ -391,11 +400,42 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
 
             self.open_order_redirect_flag = False
 
+        # /////////////////////////////////////////////////////////////////////////////////
+
         @self.bot.message_handler(func=lambda message: message.text == "CLOSE_POSITION")
         def closee_pos(message):               
-            response_message = "Please enter a coin(e.g.: btc)"
+            response_message = "Please choice an option:\n1 - Close All:\n2 - Custom closing"
             message.text = self.connector_func(message, response_message)
-            self.info_triger = True           
+            self.close_pos_redirect_flag = True
+            
+        @self.bot.message_handler(func=lambda message: self.close_pos_redirect_flag)
+        def redirect_closee_pos(message):   
+            if message.text.strip() == '1':
+                self.close_all_orderS_triger = True
+                response_message = "Please waiting..."
+                message.text = self.connector_func(message, response_message)
+                # self.close_all_positionS_triger = True
+            if message.text.strip() == '2':
+                self.close_order_triger = True
+                # self.close_position_triger = True
+
+        @self.bot.message_handler(func=lambda message: self.close_order_triger)
+        def redirect_closee_custom_pos(message):   
+            response_message = "Please enter a coin (e.g.: btc)"
+            message.text = self.connector_func(message, response_message)
+            self.redirect_closee_custom_pos_flag = True
+            
+        @self.bot.message_handler(func=lambda message: self.redirect_closee_custom_pos_flag)
+        def sec_redirect_closee_custom_pos(message):   
+            try:              
+                self.symbol = message.text.strip().upper() + 'USDT'       
+                response_message = "Please waiting..."
+                message.text = self.connector_func(message, response_message)
+                self.redirect_closee_custom_pos_flag = False
+            except:
+                response_message = "Please enter a valid coin. Try again (e.g.: btc)"
+                message.text = self.connector_func(message, response_message)
+            
 
         @self.bot.message_handler(func=lambda message: message.text == "INFO")
         def info_pos(message):               
