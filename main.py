@@ -144,6 +144,7 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
             return True
         
     async def go_tgButton_handler(self, message):
+        print('ksdvksfhbvb')
         cur_time = time.time()
         last_duration_time = None
         duration = None
@@ -153,10 +154,17 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
         return_open_order_tgButton_handler = None
         answer_open_order_tgButton_handler = None
         return_info_tgButton_handler = None 
+        answer_tg_reply = None
+        return_closeAll_pos_tgButton_handler = None
+        answer_closeAll_pos_tgButton_handler = None
+        success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = [], [], [], []
 
         tasks = []        
 
         while True:
+            print("Before sleep1")
+            await asyncio.sleep(1)
+            print("After sleep1")
             try:
                 # /////////////////////////////////////////////////////////////////////////////////////        
                 if self.stop_triger_flag:
@@ -262,11 +270,9 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                     elif answer_tg_reply[0] == []:
                         info_tg_reply = "There is no one open order"
                         message.text = self.connector_func(message, info_tg_reply)
-                    elif not answer_tg_reply[0]:
+                    elif answer_tg_reply[0] == None:
                         info_tg_reply = "Some problems with getting positions data..."
                         message.text = self.connector_func(message, info_tg_reply)
-
-
 
                 # /////////////////////////////////////////////////////////////////////////////////////
                 if self.close_order_triger and self.symbol:
@@ -275,7 +281,31 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                     self.close_all_orderS_triger = False
                     task4 = [self.close_all_poss()]
                     tasks.append(task4)
-                    return_open_order_tgButton_handler = asyncio.gather(*task4)
+                    return_closeAll_pos_tgButton_handler = asyncio.gather(*task4)
+
+                if return_closeAll_pos_tgButton_handler and return_closeAll_pos_tgButton_handler.done():
+                    answer_closeAll_pos_tgButton_handler = return_closeAll_pos_tgButton_handler.result()
+                    return_closeAll_pos_tgButton_handler = None
+                    close_tg_reply = ""
+                    success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = answer_closeAll_pos_tgButton_handler[0]
+                    print(f"success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list: {success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list}")
+                    if success_closePosition_list:
+                        byStr_success_closePosition_list = [str(x) for x in success_closePosition_list]
+                        close_tg_reply += 'The next positions was closing by succesfully:\n' + ', '.join(byStr_success_closePosition_list) + '\n'
+                    else:
+                        close_tg_reply += 'There is no one positions was closing by succesfully' + '\n'
+                    if problem_closePosition_list:
+                        byStr_problem_closePosition_list = [str(x) for x in problem_closePosition_list]
+                        close_tg_reply += 'The next positions was NOT closing by succesfully:\n' + ', '.join(byStr_problem_closePosition_list) + '\n'
+                    if cancel_orders_list:
+                        byStr_cancel_orders_list = [str(x) for x in cancel_orders_list]
+                        close_tg_reply += 'The next TPorders was canceled by succesfully:\n' + ', '.join(byStr_cancel_orders_list) + '\n'
+                    if unSuccess_cancel_orders_list:
+                        byStr_unSuccess_cancel_orders_list = [str(x) for x in unSuccess_cancel_orders_list]
+                        close_tg_reply += 'The next TPorders was NOT canceled by succesfully:\n' + ', '.join(byStr_unSuccess_cancel_orders_list) + '\n'
+
+
+                    message.text = self.connector_func(message, close_tg_reply)
 
 
                 # /////////////////////////////////////////////////////////////////////////////////////
@@ -289,28 +319,28 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                 if return_open_order_tgButton_handler and return_open_order_tgButton_handler.done():
                     answer_open_order_tgButton_handler = return_open_order_tgButton_handler.result()
                     if 0 in answer_open_order_tgButton_handler[0]:
-                        order_tg_reply = "Some exceptions with placeing order..."
+                        order_tg_reply = "Some exceptions with placeing order..." + '\n'
                         message.text = self.connector_func(message, order_tg_reply)
                     if -1 in answer_open_order_tgButton_handler[0]:
-                        order_tg_reply = "Some problem with placeing order..."
+                        order_tg_reply = "Some problem with placeing order..." + '\n'
                         message.text = self.connector_func(message, order_tg_reply)
                     if -2 in answer_open_order_tgButton_handler[0]:
-                        order_tg_reply = "Some problem with setting takeProfit..."
+                        order_tg_reply = "Some problem with setting takeProfit..." + '\n'
                         message.text = self.connector_func(message, order_tg_reply)
                     if 1 in answer_open_order_tgButton_handler[0]:
-                        order_tg_reply = "The order was created successuly!"
+                        order_tg_reply = "The order was created successuly!" + '\n'
                         message.text = self.connector_func(message, order_tg_reply)
                     if 2 in answer_open_order_tgButton_handler[0]:
-                        order_tg_reply = "The takeProfit was setting successuly!"
+                        order_tg_reply = "The takeProfit was setting successuly!" + '\n'
                         message.text = self.connector_func(message, order_tg_reply)
                     return_open_order_tgButton_handler = None
 
 
                 # /////////////////////////////////////////////////////////////////////////////////////
 
-                print("Before sleep")
-                await asyncio.sleep(2)
-                print("After sleep")
+                print("Before sleep2")
+                await asyncio.sleep(1)
+                print("After sleep2")
 
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")

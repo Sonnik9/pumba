@@ -259,12 +259,15 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 
     async def close_all_poss(self):
         positions_data = None
-        cancel_orders_list = None
+        cancel_orders_list = []
+        unSuccess_cancel_orders_list = []
         success_closePosition_list = []
         problem_closePosition_list = []
         defender_corrector = 1
         new_positions_data = []
+        
         positions_data = await self.get_open_positions()
+        print(f"positions_data: {positions_data}")
         if positions_data:
            for x in positions_data:
                 if float(x['positionAmt']) != 0:
@@ -277,26 +280,34 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 
                 new_positions_data.append({
                         "symbol": x['symbol'],
-                        "defender": 1*defender_corrector,
-                        "qnt": abs(x['positionAmt']),
+                        "defender": defender_corrector,
+                        "qnt": abs(float(x['positionAmt'])),
                     })
+        print(f"new_positions_data: {new_positions_data}")
                 
         is_closing = -1
         target_price = None
         market_type = 'MARKET'
-        close_resp = False
+        close_resp_flag = False
         if new_positions_data:
             for item in new_positions_data:
-                close_resp = await self.make_order(item, is_closing, target_price, market_type)
-                if close_resp:
+                close_resp_flag = False
+                try:
+                    _, close_resp_flag = await self.make_order(item, is_closing, target_price, market_type)
+                except:
+                    pass
+                if close_resp_flag:
                     success_closePosition_list.append(item['symbol'])                    
                 else:
                     problem_closePosition_list.append(item['symbol'])
 
-        if success_closePosition_list:
-            cancel_orders_list = await self.cancel_all_orders_for_position(success_closePosition_list)                    
+        # if success_closePosition_list and problem_closePosition_list:
+        # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_orders_for_position(success_closePosition_list)  
+        cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_order_by_id()
+        # elif success_closePosition_list and not problem_closePosition_list:
+        # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_open_orders()              
 
-        return success_closePosition_list, problem_closePosition_list, cancel_orders_list
+        return success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list
                 
 
     

@@ -168,8 +168,6 @@ class GETT_API(GETT_API_CCXT):
         params = {}          
         symbol = None     
         url = self.URL_PATTERN_DICT['positions_url']
-        if symbol:
-            params["symbol"] = symbol
         params = self.get_signature(params)
         all_positions = await self.HTTP_request(url, method=method, headers=self.header, params=params)
         all_positions = [x for x in all_positions if float(x["positionAmt"]) != 0]
