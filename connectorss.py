@@ -71,18 +71,19 @@ class CONNECTOR_TG(CONNECTOR_BINANCEE):
         super().__init__()      
         self.bot = telebot.TeleBot(self.tg_api_token)
         self.menu_markup = self.create_menu()
-        self.reserved_frathes_list = ["SETTINGS", "GO", "STOP", "OPEN_ORDER", "CLOSE_POSITION", "INFO", "BALANCE", "RESTART", "1", "2"]
+        self.reserved_frathes_list = ["SETTINGS", "GO", "STOP", "OPEN_ORDER", "CLOSE_POSITION", "CLOSE_ALL_POSITIONS", "INFO", "BALANCE", "RESTART", "1", "2"]
         self.signal_number_acumm_list = []        
 
     def create_menu(self):
         menu_markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
-        button3 = types.KeyboardButton("GO") 
-        button2 = types.KeyboardButton("SETTINGS")        
         button1 = types.KeyboardButton("BALANCE")
-        button8 = types.KeyboardButton("RESTART")
+        button2 = types.KeyboardButton("SETTINGS")   
+        button3 = types.KeyboardButton("GO") 
         button4 = types.KeyboardButton("STOP")
         button5 = types.KeyboardButton("OPEN_ORDER")
-        button7 = types.KeyboardButton("CLOSE_POSITION")
         button6 = types.KeyboardButton("INFO")
-        menu_markup.add(button1, button2, button3, button4, button5, button6, button7, button8)        
+        button7 = types.KeyboardButton("CLOSE_POSITION")
+        button8 = types.KeyboardButton("CLOSE_ALL_POSITIONS") 
+        button9 = types.KeyboardButton("RESTART")
+        menu_markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)        
         return menu_markup

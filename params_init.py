@@ -46,7 +46,7 @@ class URL_TEMPLATES(BASIC_PARAMETRS):
             print('futures test')
             self.URL_PATTERN_DICT['current_ptice_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/price"
             self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
-            self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
+            self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'            
             self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
             self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binancefuture.com/fapi/v2/balance'
             self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/openOrders'
@@ -109,6 +109,7 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
         
         self.launch_finish_text = None        
         self.stop_triger_flag = False
+        self.stop_triger_tumbler_flag = False
 
         self.websocket_stop_returned_flag = False
         self.websocket_pump_returned_flag = False
@@ -140,8 +141,10 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.close_position_redirect_flag = False
         self.symbol = None      
         self.defender = None
-        self.depo = None
+        # self.depo = None
+        self.min_qnt_multipliter = None   
         self.margin_type = 'ISOLATED' # 'CROSS'
+        self.static_liver_flag = True
         self.leverage = 4
         self.static_TP_flag = True       
         self.atr_multipliter = 4

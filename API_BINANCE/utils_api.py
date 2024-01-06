@@ -1,6 +1,7 @@
 from API_BINANCE.delete_api import DELETEE_API 
 from RISK.tp_sl_1 import RISK_MANAGEMENT
 from datetime import datetime
+from decimal import Decimal, ROUND_DOWN
 import asyncio
 import logging, os, inspect
 
@@ -69,17 +70,72 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
                 return len(number_str.split('.')[1])
         return 0
 
-    async def calc_qnt_func(self, symbol, price, depo): 
+    # async def calc_qnt_func(self, symbol, price, depo): 
+    #     symbol_info = None
+    #     symbol_data = None 
+    #     price_precision = None
+    #     quantity_precision = None
+    #     quantity = None  
+    #     recalc_depo = None
+    #     min_qnt = None 
+    #     max_qnt = None 
+    #     min_depo = None
+    #     max_depo = None
+        
+    #     try:
+    #         symbol_info = await self.get_excangeInfo(symbol)
+    #     except Exception as ex:
+    #         logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
+
+    #     if symbol_info:
+    #         try:
+    #             symbol_data = next((item for item in symbol_info["symbols"] if item['symbol'] == symbol), None)
+    #         except Exception as ex:
+    #             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+            
+    #     if symbol_data:            
+    #         try:                
+    #             tick_size = float(symbol_data['filters'][0]["tickSize"])
+    #             price_precision = int(symbol_data['pricePrecision']) 
+    #             print(f"price_precision: {price_precision}")           
+    #             quantity_precision = int(symbol_data['quantityPrecision'])                 
+    #             min_qnt = float(symbol_data['filters'][1]['minQty'])
+    #             max_qnt = float(symbol_data['filters'][1]['maxQty'])
+    #         except Exception as ex:
+    #             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+        
+    #         try:
+    #             tick_size = await self.count_multipliter_places(tick_size)
+    #             print(f"tick_size: {tick_size}")
+    #         except Exception as ex:
+    #             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+            
+    #         try:
+    #             min_depo = min_qnt * price           
+    #             max_depo = max_qnt * price
+    #             if depo <= min_depo:
+    #                 depo = min_depo               
+    #             elif depo >= max_depo:
+    #                 depo = max_depo 
+                
+    #             quantity = round(depo / price, quantity_precision)
+    #             recalc_depo = quantity * price
+    #             # print(f"{symbol}:  {quantity, recalc_depo, price_precision, tick_size}")
+                    
+    #         except Exception as ex:
+    #             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+    #     return quantity, recalc_depo, price_precision, tick_size
+
+    async def calc_qnt_func(self, symbol, price, min_qnt_multipliter): 
         symbol_info = None
         symbol_data = None 
         price_precision = None
         quantity_precision = None
         quantity = None  
+        notional = None
         recalc_depo = None
         min_qnt = None 
-        max_qnt = None 
-        min_depo = None
-        max_depo = None
         
         try:
             symbol_info = await self.get_excangeInfo(symbol)
@@ -92,14 +148,17 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
             
-        if symbol_data:            
+        if symbol_data:   
+            print(symbol_data)         
             try:                
                 tick_size = float(symbol_data['filters'][0]["tickSize"])
                 price_precision = int(symbol_data['pricePrecision']) 
                 print(f"price_precision: {price_precision}")           
-                quantity_precision = int(symbol_data['quantityPrecision'])                 
-                min_qnt = float(symbol_data['filters'][1]['minQty'])
-                max_qnt = float(symbol_data['filters'][1]['maxQty'])
+                quantity_precision = int(symbol_data['quantityPrecision']) 
+                lot_size_filter = next((item for item in symbol_data['filters'] if item['filterType'] == 'MIN_NOTIONAL'), None)  
+                notional = float(lot_size_filter.get('notional', None))
+                print(f"notional: {notional}")
+                
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
         
@@ -109,22 +168,17 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
             
-            try:
-                min_depo = min_qnt * price           
-                max_depo = max_qnt * price
-                if depo <= min_depo:
-                    depo = min_depo               
-                elif depo >= max_depo:
-                    depo = max_depo 
-                
-                quantity = round(depo / price, quantity_precision)
-                recalc_depo = quantity * price
+            try:  
+                # quantity = round(notional / price, quantity_precision)
+                quantity = round(notional / price, tick_size)
+                recalc_depo = quantity * price     
+                print(f"quantity: {quantity}")
                 # print(f"{symbol}:  {quantity, recalc_depo, price_precision, tick_size}")
-                    
             except Exception as ex:
-                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                logging.exception(f"An error occurred: {ex}")
 
         return quantity, recalc_depo, price_precision, tick_size
+    
     
 # ///////////////////////////////////////////////////////////////////////////////////
     async def make_market_order_temp_func(self, item):
@@ -139,11 +193,14 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
             print(changing_margin_type)
         except Exception as ex:
             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
-
-        try:
-            lev_size = await self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
-        except Exception as ex:
-            logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+        
+        if not self.static_liver_flag:
+            try:
+                lev_size = await self.calculate_leverage(entry_price, defender, atr, atr_multipliter)
+            except Exception as ex:
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+        else:
+            lev_size = self.leverage
 
         try:
             lev = await self.set_leverage(symbol, lev_size)     
@@ -153,7 +210,7 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
         if lev and 'leverage' in lev and lev['leverage'] == lev_size:
             enter_deJure_price = itemm["current_price"]
             try:                    
-                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = await self.calc_qnt_func(symbol, enter_deJure_price, self.depo)            
+                itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = await self.calc_qnt_func(symbol, enter_deJure_price, self.min_qnt_multipliter)            
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
             print(f"itemm['qnt'] before: {itemm['qnt']}") 
@@ -303,13 +360,61 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 
         # if success_closePosition_list and problem_closePosition_list:
         # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_orders_for_position(success_closePosition_list)  
-        cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_order_by_id()
+        cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_order_by_id(success_closePosition_list)
         # elif success_closePosition_list and not problem_closePosition_list:
         # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_open_orders()              
 
         return success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list
                 
+    async def close_custom_poss(self, symbol):
+        positions_data = None
+        cancel_orders_list = []
+        unSuccess_cancel_orders_list = []
+        success_closePosition_list = []
+        problem_closePosition_list = []
+        defender_corrector = 1
+        new_positions_data = {}
+        
+        positions_data = await self.get_open_positions()
+        positions_data = [x for x in positions_data if x["symbol"] == symbol][0]
+        print(f"positions_data: {positions_data}")
+        if positions_data:           
+            if float(positions_data['positionAmt']) != 0:
+                if float(positions_data['positionAmt']) > 0:
+                    defender_corrector = 1
+                else:
+                    defender_corrector = -1
 
+                new_positions_data = {
+                        "symbol": positions_data['symbol'],
+                        "defender": defender_corrector,
+                        "qnt": abs(float(positions_data['positionAmt'])),
+                    }
+        print(f"new_positions_data: {new_positions_data}")
+                
+        is_closing = -1
+        target_price = None
+        market_type = 'MARKET'
+        close_resp_flag = False
+        if new_positions_data:            
+            close_resp_flag = False
+            try:
+                _, close_resp_flag = await self.make_order(new_positions_data, is_closing, target_price, market_type)
+            except:
+                pass
+            if close_resp_flag:
+                success_closePosition_list.append(new_positions_data['symbol'])                    
+            else:
+                problem_closePosition_list.append(new_positions_data['symbol'])
+
+        # if success_closePosition_list and problem_closePosition_list:
+        # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_orders_for_position(success_closePosition_list)  
+        cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_order_by_id(success_closePosition_list)
+        # elif success_closePosition_list and not problem_closePosition_list:
+        # cancel_orders_list, unSuccess_cancel_orders_list = await self.cancel_all_open_orders()              
+
+        return success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list
+ 
     
     
     # /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,3 +502,9 @@ class UTILS_APII(DELETEE_API, RISK_MANAGEMENT):
 #         return succes_closed_symbol_list, dont_closed_symbol_list
 
 # # ///////////////////////////////////////////////////////////////////////////////////////
+    
+
+# symbol_data = {'symbol': 'ETHUSDT', 'pair': 'ETHUSDT', 'contractType': 'PERPETUAL', 'deliveryDate': 4133404800000, 'onboardDate': 1569398400000, 'status': 'TRADING', 'maintMarginPercent': '2.5000', 'requiredMarginPercent': '5.0000', 'baseAsset': 'ETH', 'quoteAsset': 'USDT', 'marginAsset': 'USDT', 'pricePrecision': 2, 'quantityPrecision': 3, 'baseAssetPrecision': 8, 'quotePrecision': 8, 'underlyingType': 'COIN', 'underlyingSubType': [], 'settlePlan': 0, 'triggerProtect': '0.0500', 'liquidationFee': '0.020000', 'marketTakeBound': '0.10', 'maxMoveOrderLimit': 10000, 'filters': [{'maxPrice': '95264.25', 'filterType': 'PRICE_FILTER', 'tickSize': '0.01', 'minPrice': '18.67'}, {'minQty': '0.001', 'stepSize': '0.001', 'maxQty': '10000', 'filterType': 'LOT_SIZE'}, {'filterType': 'MARKET_LOT_SIZE', 'stepSize': '0.001', 'minQty': '0.001', 'maxQty': '10000'}, {'filterType': 'MAX_NUM_ORDERS', 'limit': 200}, {'filterType': 'MAX_NUM_ALGO_ORDERS', 'limit': 10}, {'filterType': 'MIN_NOTIONAL', 'notional': '20'}, {'multiplierDown': '0.9000', 'filterType': 'PERCENT_PRICE', 'multiplierDecimal': '4', 'multiplierUp': '1.1000'}], 'orderTypes': ['LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', 'TRAILING_STOP_MARKET'], 'timeInForce': ['GTC', 'IOC', 'FOK', 'GTX', 'GTD']}
+# lot_size_filter = next((item for item in symbol_data['filters'] if item['filterType'] == 'LOT_SIZE'), None)  
+# notional = float(lot_size_filter['notional'])
+# print(notional)

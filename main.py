@@ -41,6 +41,25 @@ class TG_ASSISTENT(UTILS_APII, TECHNIQUESS, LIVE_MONITORING):
                 time.sleep(1.1 + i*decimal)        
                    
         return None
+    
+    async def closePos_template(self, success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list, close_tg_reply):
+        print(f"success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list: {success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list}")
+        if success_closePosition_list:
+            byStr_success_closePosition_list = [str(x) for x in success_closePosition_list]
+            close_tg_reply += 'The next positions was closing by succesfully:\n' + ', '.join(byStr_success_closePosition_list) + '\n'
+        else:
+            close_tg_reply += 'There is no one positions was closing by succesfully' + '\n'
+        if problem_closePosition_list:
+            byStr_problem_closePosition_list = [str(x) for x in problem_closePosition_list]
+            close_tg_reply += 'The next positions was NOT closing by succesfully:\n' + ', '.join(byStr_problem_closePosition_list) + '\n'
+        if cancel_orders_list:
+            byStr_cancel_orders_list = [str(x) for x in cancel_orders_list]
+            close_tg_reply += 'The next TPorders was canceled by succesfully:\n' + ', '.join(byStr_cancel_orders_list) + '\n'
+        if unSuccess_cancel_orders_list:
+            byStr_unSuccess_cancel_orders_list = [str(x) for x in unSuccess_cancel_orders_list]
+            close_tg_reply += 'The next TPorders was NOT canceled by succesfully:\n' + ', '.join(byStr_unSuccess_cancel_orders_list) + '\n'
+        
+        return close_tg_reply
 
     async def date_of_the_month(self):        
         current_time = time.time()        
@@ -158,6 +177,10 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
         return_closeAll_pos_tgButton_handler = None
         answer_closeAll_pos_tgButton_handler = None
         success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = [], [], [], []
+        return_closeCustom_pos_tgButton_handler = None
+        answer_closeCustom_pos_tgButton_handler = None
+
+        
 
         tasks = []        
 
@@ -167,14 +190,19 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
             print("After sleep1")
             try:
                 # /////////////////////////////////////////////////////////////////////////////////////        
-                if self.stop_triger_flag:
+                if self.stop_triger_flag and self.stop_triger_tumbler_flag:
+                    self.stop_triger_tumbler_flag = False
+                    print(' sfhdvbfkvb')
+                    
                     if tasks:
                         stop_response = None
                         stop_response = await self.stop_tgButton_handler(tasks)
                         if stop_response:
+                            self.stop_triger_flag = False
                             return "The robot was stopped!"
                     else:
-                        print('Please, wait a little bit!')
+                        self.stop_triger_flag = False
+                        return "The robot was stopped!"
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
                 # # /////////////////////////////////////////////////////////////////////////////////////
@@ -275,8 +303,25 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                         message.text = self.connector_func(message, info_tg_reply)
 
                 # /////////////////////////////////////////////////////////////////////////////////////
+                
+                # /////////////////////////////////////////////////////////////////////////////////////
                 if self.close_order_triger and self.symbol:
-                    pass
+                    self.close_order_triger = False
+                    task5 = [self.close_custom_poss(self.symbol)]
+                    tasks.append(task5)
+                    return_closeCustom_pos_tgButton_handler = asyncio.gather(*task5)
+
+                if return_closeCustom_pos_tgButton_handler and return_closeCustom_pos_tgButton_handler.done():
+                    answer_closeCustom_pos_tgButton_handler = return_closeCustom_pos_tgButton_handler.result()
+                    return_closeCustom_pos_tgButton_handler = None
+                    close_tg_reply = ""
+                    success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = answer_closeCustom_pos_tgButton_handler[0]
+                    close_tg_reply = await self.closePos_template(success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list, close_tg_reply)
+
+                    success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = [], [], [], []
+                    message.text = self.connector_func(message, close_tg_reply)
+                # ///////////////////////////////////////////////////////////////////////////////////////
+
                 if self.close_all_orderS_triger:                    
                     self.close_all_orderS_triger = False
                     task4 = [self.close_all_poss()]
@@ -288,25 +333,11 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                     return_closeAll_pos_tgButton_handler = None
                     close_tg_reply = ""
                     success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = answer_closeAll_pos_tgButton_handler[0]
-                    print(f"success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list: {success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list}")
-                    if success_closePosition_list:
-                        byStr_success_closePosition_list = [str(x) for x in success_closePosition_list]
-                        close_tg_reply += 'The next positions was closing by succesfully:\n' + ', '.join(byStr_success_closePosition_list) + '\n'
-                    else:
-                        close_tg_reply += 'There is no one positions was closing by succesfully' + '\n'
-                    if problem_closePosition_list:
-                        byStr_problem_closePosition_list = [str(x) for x in problem_closePosition_list]
-                        close_tg_reply += 'The next positions was NOT closing by succesfully:\n' + ', '.join(byStr_problem_closePosition_list) + '\n'
-                    if cancel_orders_list:
-                        byStr_cancel_orders_list = [str(x) for x in cancel_orders_list]
-                        close_tg_reply += 'The next TPorders was canceled by succesfully:\n' + ', '.join(byStr_cancel_orders_list) + '\n'
-                    if unSuccess_cancel_orders_list:
-                        byStr_unSuccess_cancel_orders_list = [str(x) for x in unSuccess_cancel_orders_list]
-                        close_tg_reply += 'The next TPorders was NOT canceled by succesfully:\n' + ', '.join(byStr_unSuccess_cancel_orders_list) + '\n'
+                    close_tg_reply = await self.closePos_template(success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list, close_tg_reply)
 
-
+                    success_closePosition_list, problem_closePosition_list, cancel_orders_list, unSuccess_cancel_orders_list = [], [], [], []
                     message.text = self.connector_func(message, close_tg_reply)
-
+                # /////////////////////////////////////////////////////////////////////////////////////
 
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
@@ -358,9 +389,8 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
             self.bot.send_message(message.chat.id, "Choose an option:", reply_markup=self.menu_markup)
 
         @self.bot.message_handler(func=lambda message: message.text == 'RESTART')
-        def handle_start(message):
-            if self.go_inProcess_flag:
-                self.stop_triger_flag = True
+        def handle_restsrt(message):     
+            
             self.init_itits()
             self.bot.send_message(message.chat.id, "Bot restart. Please, choose an option!:", reply_markup=self.menu_markup)
             self.stop_triger_flag = False 
@@ -379,8 +409,9 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
             message.text = self.connector_func(message, response_message)   
 
         @self.bot.message_handler(func=lambda message: message.text == "STOP")
-        def stop(message):
+        def stopp(message):
             self.stop_triger_flag = True
+            self.stop_triger_tumbler_flag = True
         # //////////////////////////////////////////////////////////////////////  
 
         @self.bot.message_handler(func=lambda message: message.text == "GO")
@@ -405,8 +436,8 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
             # self.init_itits() 
             self.symbol = None      
             self.defender = None
-            self.depo = None           
-            response_message = "Please enter a coin and side with a space (e.g.: btc 1 9)"
+            self.min_qnt_multipliter = None           
+            response_message = "Please enter a coin, side and min_qnt_multipliter with a space (e.g.: btc 1 1)"
             message.text = self.connector_func(message, response_message)
             self.order_triger = True
             self.open_order_redirect_flag = True           
@@ -416,12 +447,12 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
 
             self.symbol = None 
             self.defender = None
-            self.depo = None
+            self.min_qnt_multipliter = None
             
             try:              
                 self.symbol = message.text.split(' ')[0].strip().upper() + 'USDT'       
                 self.defender = int(message.text.split(' ')[1].strip())
-                self.depo = int(message.text.split(' ')[2].strip())
+                self.min_qnt_multipliter = int(message.text.split(' ')[2].strip())
                 response_message = "Please waiting..."
                 message.text = self.connector_func(message, response_message)
             except:
@@ -432,31 +463,22 @@ class TG_MANAGER(TG_BUTTON_HANDLER):
 
         # /////////////////////////////////////////////////////////////////////////////////
 
-        @self.bot.message_handler(func=lambda message: message.text == "CLOSE_POSITION")
-        def closee_pos(message):               
-            response_message = "Please choice an option:\n1 - Close All:\n2 - Custom closing"
+        @self.bot.message_handler(func=lambda message: message.text == "CLOSE_ALL_POSITIONS")
+        def closee_all_pos(message):
+            response_message = "Please waiting..."
             message.text = self.connector_func(message, response_message)
-            self.close_pos_redirect_flag = True
-            
-        @self.bot.message_handler(func=lambda message: self.close_pos_redirect_flag)
-        def redirect_closee_pos(message):   
-            if message.text.strip() == '1':
-                self.close_all_orderS_triger = True
-                response_message = "Please waiting..."
-                message.text = self.connector_func(message, response_message)
-                # self.close_all_positionS_triger = True
-            if message.text.strip() == '2':
-                self.close_order_triger = True
-                # self.close_position_triger = True
+            self.close_all_orderS_triger = True
 
-        @self.bot.message_handler(func=lambda message: self.close_order_triger)
-        def redirect_closee_custom_pos(message):   
+        @self.bot.message_handler(func=lambda message: message.text == "CLOSE_POSITION")
+        def closee_pos(message): 
+            self.symbol = None              
             response_message = "Please enter a coin (e.g.: btc)"
             message.text = self.connector_func(message, response_message)
+            self.close_order_triger = True
             self.redirect_closee_custom_pos_flag = True
             
         @self.bot.message_handler(func=lambda message: self.redirect_closee_custom_pos_flag)
-        def sec_redirect_closee_custom_pos(message):   
+        def redirect_closee_custom_pos(message):   
             try:              
                 self.symbol = message.text.strip().upper() + 'USDT'       
                 response_message = "Please waiting..."

@@ -6,14 +6,15 @@ class DELETEE_API(POSTT_API):
     def __init__(self) -> None:
         super().__init__()        
 
-    async def cancel_order_by_id(self):
+    async def cancel_order_by_id(self, success_closePosition_list):
         method = 'DELETE'
         cancel_order = None
         all_orders = None        
         cancel_orders_list = []
         unSuccess_cancel_orders_list = []
-        url = self.URL_PATTERN_DICT['cancel_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
+        url = self.URL_PATTERN_DICT['create_order_url']
         all_orders = await self.get_all_orders()
+        all_orders = [x for x in all_orders if x["symbol"] in success_closePosition_list]
         print(all_orders)
 
         for item in all_orders:
@@ -33,22 +34,22 @@ class DELETEE_API(POSTT_API):
             
         return cancel_orders_list, unSuccess_cancel_orders_list
 
-    async def cancel_all_orders_for_position(self, symbol_list):
-        cancel_orders_list = []  
-        unSuccess_cancel_orders_list = []  
-        method = 'DELETE'    
+    # async def cancel_all_orders_for_position(self, symbol_list):
+    #     cancel_orders_list = []  
+    #     unSuccess_cancel_orders_list = []  
+    #     method = 'DELETE'    
 
-        cancel_order = None
-        params = {}
+    #     cancel_order = None
+    #     params = {}
         
-        params = self.get_signature(params)
-        url = self.URL_PATTERN_DICT['cancel_all_orders_url']
+    #     params = self.get_signature(params)
+    #     url = self.URL_PATTERN_DICT['cancel_all_orders_url']
                 
-        cancel_order = await self.HTTP_request(url, method=method, headers=self.header, params=params)
-        print(cancel_order)
-        if 'msg' in cancel_order and cancel_order['msg'] == 'The operation of cancel all open order is done.':
-            # print(f"Order for symbol {item} has been successfully canceled.")
-            cancel_orders_list += symbol_list
+    #     cancel_order = await self.HTTP_request(url, method=method, headers=self.header, params=params)
+    #     print(cancel_order)
+    #     if 'msg' in cancel_order and cancel_order['msg'] == 'The operation of cancel all open order is done.':
+    #         # print(f"Order for symbol {item} has been successfully canceled.")
+    #         cancel_orders_list += symbol_list
             
-        return cancel_orders_list, unSuccess_cancel_orders_list
+    #     return cancel_orders_list, unSuccess_cancel_orders_list
     
