@@ -66,7 +66,7 @@ class LIVE_MONITORING_ASSISTENT(GETT_API_CCXT):
             self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
             self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
             timeframe = '1m'
-            limit = 12
+            limit = 15
             m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)  
             close_1m_5_dataFramelist = m1_data['Close']
             close_1m_5_list = close_1m_5_dataFramelist.dropna().to_list()
@@ -115,9 +115,9 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                 counter = 0    
                 accum_counter_list = [] 
                 curDataTime = ''  
-                # wait_time = await self.kline_waiter()
-                # print(f"wait_time: {wait_time}")
-                # await asyncio.sleep(wait_time)                
+                wait_time = await self.kline_waiter()
+                print(f"wait_time: {wait_time}")
+                await asyncio.sleep(wait_time)                
                  
                 if len(coins_in_squeezeOn) == 0:  
                     print(f"len(coins_in_squeezeOn) == 0: {len(coins_in_squeezeOn) == 0}")                                 
@@ -141,7 +141,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
 
                             async for msg in ws:
                                 current_time = time.time()
-                                print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
+                                # print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
                                 # print(coins_in_squeezeOn[0])
                                 if self.stop_triger_flag:
                                     return
@@ -195,7 +195,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                         cur_per_change = ((y["last_close_price"] - x["prev_close_1m"]) / x["prev_close_1m"])* 100  
                                                         # coins_in_squeezeOn[i]["cur_per_change"] = cur_per_change
                                                           
-                                                        print(cur_per_change)                                       
+                                                        # print(cur_per_change)                                       
 
                                                         if cur_per_change >= x["cur_price_agregated_compearer_5"]:
                                                             curDataTime = await self.cur_dateTime()
@@ -210,14 +210,14 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                                 self.pump_candidate_busy_list.append(x["symbol"]) 
                                                                 per_change_conditionTrue_flag = True                             
 
-                                                        elif cur_per_change <= -1*x["cur_price_agregated_compearer_5"]:
-                                                            curDataTime = await self.cur_dateTime()
+                                                        # elif cur_per_change <= -1*x["cur_price_agregated_compearer_5"]:
+                                                        #     curDataTime = await self.cur_dateTime()
                                                             
-                                                            async with self.lock_candidate_coins: 
-                                                                print('''hi self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')                           
-                                                                self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))
-                                                                self.pump_candidate_busy_list.append(x["symbol"]) 
-                                                                per_change_conditionTrue_flag = True                                   
+                                                        #     async with self.lock_candidate_coins: 
+                                                        #         print('''hi self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')                           
+                                                        #         self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))
+                                                        #         self.pump_candidate_busy_list.append(x["symbol"]) 
+                                                        #         per_change_conditionTrue_flag = True                                   
                                                         
                                                         else:
                                                             pass
@@ -233,6 +233,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                             coins_in_squeezeOn, last_update_time, counter = await self.coins_in_squeezeOn_shejule_Updater(current_time, last_update_time, coins_in_squeezeOn, coins_in_squeezeOn_bufer, counter)                                          
                                             process_list = []
                                             process_bufer_set = set()
+                                            # print(coins_in_squeezeOn)
 
                                         else:                                            
                                             accum_counter_list, coins_in_squeezeOn, streams, ws = await self.coin_squeezeOn_connectionExceptions(accum_counter_list, counter, process_bufer_set, coins_in_squeezeOn, streams, ws)                      

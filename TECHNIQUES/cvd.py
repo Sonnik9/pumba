@@ -52,7 +52,7 @@ def calculate_cvd_two_pass(full_df):
 def calculate_cvd(full_df):
     # Assuming 'Time' is already in datetime format
     df = full_df.copy()
-    df = df.iloc[-120:]
+    # df = df.iloc[-120:]
 
     df['open_close_max'] = df.High - df[["Open", "Close"]].max(axis=1)
     df['open_close_min'] = df[["Open", "Close"]].min(axis=1) - df.Low
@@ -76,17 +76,35 @@ def calculate_cvd(full_df):
     df.loc[df.is_close_larger == True, 'delta'] = df.loc[df.is_close_larger == True, 'Volume'] * (df.loc[df.is_close_larger == True, 'delta'])
 
     df['cvd'] = np.cumsum(df.delta.values)
+    print(df['cvd'])
+
+    return df
+
+def calculate_usual_cvd(dff):
+
+    df = dff.copy()
+
+    # Формирование направления (1 или -1)
+    df['direction'] = np.where(df['Close'] >= df['Open'], 1, -1)
+
+    # Умножение объема на направление
+    df['volume_directional'] = df['Volume'] * df['direction']
+
+    # Расчет кумулятивной дельты объема (CVD)
+    df['cvd'] = df['volume_directional'].cumsum()
+    print(df['cvd'])
 
     return df
 
 
+# import asyncio
 
-get_api = GETT_API_CCXT()
-timeframe = '1m'
-limit = 20000
-full_df = get_api.get_ccxtBinance_klines('BTCUSDT', timeframe, limit)
-result_df = calculate_cvd(full_df)
-result_df2 = calculate_cvd_two_pass(full_df)
+# get_api = GETT_API_CCXT()
+# timeframe = '1m'
+# limit = 120
+# full_df = asyncio.run(get_api.get_ccxtBinance_klines('BTCUSDT', timeframe, limit))
+# result_df = calculate_cvd(full_df)
+# result_df2 = calculate_cvd_two_pass(full_df)
 
 # # Построение графика
 # plt.figure(figsize=(10, 6))
@@ -97,18 +115,18 @@ result_df2 = calculate_cvd_two_pass(full_df)
 # plt.legend()
 # plt.show()
 
-# Построение графика
-fig = px.line(result_df, x=result_df.index, y='cvd', labels={'cvd': 'CVD'},
-              title='Cumulative Volume Delta (CVD) Over Time')
-fig.update_xaxes(title_text='Time')
-fig.update_yaxes(title_text='CVD')
-fig.show()
+# # Построение графика
+# fig = px.line(result_df, x=result_df.index, y='cvd', labels={'cvd': 'CVD'},
+#               title='Cumulative Volume Delta (CVD) Over Time')
+# fig.update_xaxes(title_text='Time')
+# fig.update_yaxes(title_text='CVD')
+# fig.show()
 
-fig = px.line(result_df2, x=result_df.index, y='cvd', labels={'cvd': 'CVD'},
-              title='Cumulative Volume Delta (CVD) Over Time')
-fig.update_xaxes(title_text='Time')
-fig.update_yaxes(title_text='CVD')
-fig.show()
+# fig = px.line(result_df2, x=result_df.index, y='cvd', labels={'cvd': 'CVD'},
+#               title='Cumulative Volume Delta (CVD) Over Time')
+# fig.update_xaxes(title_text='Time')
+# fig.update_yaxes(title_text='CVD')
+# fig.show()
 
 # python -m TECHNIQUES.cvd
 

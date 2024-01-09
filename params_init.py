@@ -70,14 +70,14 @@ class TIME_TEMPLATES(URL_TEMPLATES):
 class FILTER_SET(TIME_TEMPLATES):
     def __init__(self) -> None:
         super().__init__()
-        self.SLICE_VOLUME_PAIRS = 100 # volums
+        self.SLICE_VOLUME_PAIRS = 200 # volums
          
         # self.SLICE_VOLATILITY = 200 # volatility
         self.MIN_FILTER_PRICE = 0.0001 # min price
         self.MAX_FILTER_PRICE = 3000000 # max price
         # self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT', 'ORDIUSDT']
         # self.problem_pairs = ['DOGEUSDT'] # problem coins list
-        self.problem_pairs = [] 
+        self.problem_pairs = ['USDCUSDT'] 
         self.MIN_VOLUM_USDT = 50000
 
 class INDICATRS_SETTINGS(FILTER_SET):
@@ -88,9 +88,9 @@ class INDICATRS_SETTINGS(FILTER_SET):
 
         # websocket params:
         # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
-        self.PRICE_KLINE_1M_MULTIPLITER = 2.0
-        self.VOLUME_KLINE_1M_MULTIPLITER = 2.1 # volum multipliter/1min
-        self.INTERVAL_CLOSEPRICE_MONITORING = 30 # sec  
+        self.PRICE_KLINE_1M_MULTIPLITER = 7.0
+        self.VOLUME_KLINE_1M_MULTIPLITER = 4.9 # volum multipliter/1min
+        self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec  
 
 class TG_HANDLER_VARS(INDICATRS_SETTINGS):
     def __init__(self) -> None:
@@ -128,6 +128,7 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
 class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
     def __init__(self) -> None:
         super().__init__()
+        self.get_balance_flag = False
         self.order_triger = False 
         self.close_order_triger = False
         # self.close_position_triger = False
@@ -136,20 +137,23 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.close_pos_redirect_flag = False
         self.redirect_closee_custom_pos_flag = False
 
-
+        self.settings_1_redirect_flag = False
+        self.settings_2_redirect_flag = False
         self.open_order_redirect_flag = False
         self.close_position_redirect_flag = False
         self.symbol = None      
         self.defender = None
-        # self.depo = None
+        self.depo = None
         self.min_qnt_multipliter = None   
         self.margin_type = 'ISOLATED' # 'CROSS'
         self.static_liver_flag = True
-        self.leverage = 4
+        self.leverage = 2
+        self.stopLoss_flag = True
         self.static_TP_flag = True       
         self.atr_multipliter = 4
         # self.TP_rate = int(self.atr_multipliter * 1.5)
-        self.TP_rate = 4
+        self.TP_rate = 3
+        self.SL_ratio = self.TP_rate / 2
         self.DIVERCIFICATION_NUMDER = 9
 
         self.info_triger = False

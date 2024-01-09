@@ -18,18 +18,20 @@ class RISK_MANAGEMENT():
 
         return abs(int(leverage))
 
-    async def static_tp_calc(self, item, tp_ratio):
+    async def static_tp_calc(self, item, tp_ratio, sl_ratio):
         
         tp_price = None
+        sl_price = None
         
         enter_deFacto_price, defender, atr, price_precision, tick_size = item['enter_deFacto_price'], item['defender'], item['atr'], item['price_precision'], item['tick_size']        
         print(f"price_precision == tick_size: {price_precision == tick_size}")        
         try:            
             tp_price = item['tp_price'] = round(enter_deFacto_price + (defender * atr * tp_ratio), tick_size)
+            sl_price = item['tp_price'] = round(enter_deFacto_price - (defender * atr * sl_ratio), tick_size)
         except Exception as ex:
             logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
 
-        return tp_price
+        return tp_price, sl_price
 
     # def sl_strategy_1_func(self, item):  
 

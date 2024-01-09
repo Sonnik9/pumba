@@ -28,13 +28,13 @@ class TECHNIQUESS(GETT_API_CCXT):
 
         return df 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
-    async def volume_confirmation(self, symbol, slice_candles=7):
+    async def volume_confirmation(self, symbol, slice_candles=10):
 
         volume_confirmation_flag = False
         self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
         self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
         timeframe = '1m'
-        limit = 10
+        limit = 15
         m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)    
         mean_volume_1m__7__3 = m1_data['Volume'].iloc[-slice_candles:-2].mean()   
         mean_volume_1m__7__2 = m1_data['Volume'].iloc[-slice_candles:-1].mean()

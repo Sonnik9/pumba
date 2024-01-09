@@ -92,7 +92,7 @@ class GETT_API(GETT_API_CCXT):
 
         return exchangeInfo
     
-    def get_balance(self):
+    async def get_balance(self):
        
         current_balance = None 
         url = self.URL_PATTERN_DICT['balance_url']
@@ -102,7 +102,7 @@ class GETT_API(GETT_API_CCXT):
         if not self.test_flag:
             params['recvWindow'] = 5000
             params = self.get_signature(params)
-            current_balance = self.HTTP_request(url, method=method, headers=self.header, params=params)
+            current_balance = await self.HTTP_request(url, method=method, headers=self.header, params=params)
             
             if self.market == 'spot':                
                 current_balance = dict(current_balance)                
@@ -113,7 +113,7 @@ class GETT_API(GETT_API_CCXT):
                 current_balance = [(x['balance'], x['crossUnPnl']) for x in current_balanceE if x['asset'] == 'USDT'][0]
         else:
             params = self.get_signature(params)
-            current_balance = self.HTTP_request(url, method=method, headers=self.header, params=params)
+            current_balance = await self.HTTP_request(url, method=method, headers=self.header, params=params)
             current_balance = float([x['balance'] for x in current_balance if x['asset'] == 'USDT'][0])  
             # print(current_balance)
             
@@ -174,14 +174,36 @@ class GETT_API(GETT_API_CCXT):
         
         return all_positions 
     
+    # async def get_klines(self, symbol, timeframe, limit):
+
+    #     klines = None
+    #     method = 'GET'
+    #     url = self.URL_PATTERN_DICT["klines_url"]        
+    #     params = {}
+    #     params["symbol"] = symbol
+    #     params["interval"] = timeframe
+    #     params["limit"] = limit
+    #     params = self.get_signature(params)
+    #     klines = await self.HTTP_request(url, method=method, headers=self.header, params=params)
+    #     if klines:
+    #         data = pd.DataFrame(klines).iloc[:, :6]
+    #         data.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+    #         data = data.set_index('Time')
+    #         data.index = pd.to_datetime(data.index, unit='ms')
+    #         data = data.astype(float)
+        
+    #     return data
+    
 
 # # //////////////////////////////////////////////////////////////////////////////////
 
 # get_apii = GETT_API()
 # symbol = 'BNBUSDT'
 # symbol = 'SOLUSDT'
-# # # klines = get_apii.get_klines(symbol, 100)
-# # # print(klines)
+# klines = asyncio.run(get_apii.get_klines(symbol, '1m', 30))
+# print(klines)
+# klines = asyncio.run(get_apii.get_ccxtBinance_klines(symbol, '1m', 30))
+# print(klines)
 # price = asyncio.run(get_apii.get_current_price(symbol))
 # open_pos = asyncio.run(get_apii.get_open_positions())
 # print(open_pos)
