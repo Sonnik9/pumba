@@ -59,7 +59,7 @@ class TG_ASSISTENT(UTILS_APII, TECHNIQUESS, LIVE_MONITORING):
         if date_of_the_month_current != date_of_the_month_start:
             signal_number_acumm_list = []
             date_of_the_month_start = date_of_the_month_current
-            self.pump_candidate_busy_list = []
+            self.pump_candidate_busy_confirm_list = []
 
         return signal_number_acumm_list, date_of_the_month_start    
    

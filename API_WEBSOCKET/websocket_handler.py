@@ -80,7 +80,8 @@ class LIVE_MONITORING_ASSISTENT(GETT_API_CCXT):
             if mean_close_1m_5 != 0:
                 precession_upgraded_data = {
                     "symbol": symbol, 
-                    "prev_close_1m": "",                            
+                    "prev_close_1m": "",  
+                    "last_close_price": "",                          
                     "cur_price_agregated_compearer_5": abs(cur_price_agregated_compearer_5)
                     
                 }   
@@ -89,6 +90,22 @@ class LIVE_MONITORING_ASSISTENT(GETT_API_CCXT):
 
         return precession_upgraded_data
     # //////////////////////////////////////////////////////////
+    async def volume_confirmation(self, symbol, slice_candles=10):
+
+        volume_confirmation_flag = False
+        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
+        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
+        timeframe = '1m'
+        limit = 15
+        m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)    
+        mean_volume_1m__7__3 = m1_data['Volume'].iloc[-slice_candles:-2].mean()   
+        mean_volume_1m__7__2 = m1_data['Volume'].iloc[-slice_candles:-1].mean()
+        volume_1m__2 = m1_data['Volume'].iloc[-2]
+        volume_1m__1 = m1_data['Volume'].iloc[-1]
+        if mean_volume_1m__7__2 != 0 and volume_1m__1 != 0: 
+            volume_confirmation_flag = (volume_1m__1 / mean_volume_1m__7__2 >= self.VOLUME_KLINE_1M_MULTIPLITER) or (volume_1m__2 / mean_volume_1m__7__3 >= self.VOLUME_KLINE_1M_MULTIPLITER)
+
+        return volume_confirmation_flag      
 
 
 class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
@@ -99,8 +116,8 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
     async def websocket_handler(self, coins_in_squeezeOn_arg):
         url = 'wss://stream.binance.com:9443/stream?streams='  
         coins_in_squeezeOn = coins_in_squeezeOn_arg.copy()
-        cur_price_agregated_compearer_5_CONSTANTS = [{"symbol": y["symbol"], "cur_price_agregated_compearer_5": y["cur_price_agregated_compearer_5"]} for y in coins_in_squeezeOn_arg]
-        self.pump_candidate_busy_list = []
+        # cur_price_agregated_compearer_5_CONSTANTS = [{"symbol": y["symbol"], "cur_price_agregated_compearer_5": y["cur_price_agregated_compearer_5"]} for y in coins_in_squeezeOn_arg]
+        pump_candidate_busy_list = []
         print(coins_in_squeezeOn)
         
         try:
@@ -117,9 +134,10 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                 curDataTime = ''  
                 wait_time = await self.kline_waiter()
                 print(f"wait_time: {wait_time}")
-                await asyncio.sleep(wait_time)                
+                await asyncio.sleep(wait_time)    
+                len_coins_in_squeezeOn = len(coins_in_squeezeOn)           
                  
-                if len(coins_in_squeezeOn) == 0:  
+                if len_coins_in_squeezeOn == 0:  
                     print(f"len(coins_in_squeezeOn) == 0: {len(coins_in_squeezeOn) == 0}")                                 
                     return  
                 streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn]
@@ -140,7 +158,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                 pass  
 
                             async for msg in ws:
-                                current_time = time.time()
+                                
                                 # print(f"len(coins_in_squeezeOn): {len(coins_in_squeezeOn)}")
                                 # print(coins_in_squeezeOn[0])
                                 if self.stop_triger_flag:
@@ -153,14 +171,13 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                     self.websocket_pump_returned_flag = True
                                     per_change_conditionTrue_flag = False
 
-                                if len(coins_in_squeezeOn) == 0:  
+                                if len_coins_in_squeezeOn == 0:  
                                     print(f"len(coins_in_squeezeOn) == 0: {len(coins_in_squeezeOn) == 0}")                                 
                                     return                                
 
                                 if msg.type == aiohttp.WSMsgType.TEXT:
                                     try:
-                                        data = json.loads(msg.data)
-                                        # print(data)
+                                        data = json.loads(msg.data)                                        
                                         symbol = data.get('data',{}).get('s')    
                                         if symbol not in process_bufer_set:
                                             last_close_price = float(data.get('data',{}).get('k',{}).get('c'))                                        
@@ -168,19 +185,18 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                             process_bufer_set.add(symbol)   
                                             # print(f"{symbol}:  {last_close_price}")    
                                             counter += 1 
-                                            # print(f"just_counter: {counter}")                                          
+                                        
 
-                                        if len(process_bufer_set) == len(coins_in_squeezeOn):
-                                            self.pump_candidate_busy_list = []
-                                            # new_coins_in_squeezeOn = []
+                                        if len(process_bufer_set) == len_coins_in_squeezeOn:
+                                            pump_candidate_busy_list = []
+                                           
                                             coins_in_squeezeOn_bufer = []
 
                                             if first_visit_flag: 
-                                                coins_in_squeezeOn = [{"symbol": x["symbol"], "prev_close_1m": x["last_close_price"]} for x in process_list]  
-                                                for i, d in enumerate(coins_in_squeezeOn):
-                                                    for f in cur_price_agregated_compearer_5_CONSTANTS:
-                                                        if d["symbol"] == f["symbol"]:
-                                                            coins_in_squeezeOn[i]["cur_price_agregated_compearer_5"] = f["cur_price_agregated_compearer_5"]
+                                                for i, x in enumerate(coins_in_squeezeOn):
+                                                    for y in process_list:
+                                                        if (x["symbol"] == y["symbol"]):
+                                                            coins_in_squeezeOn[i]["prev_close_1m"] = y["last_close_price"]
                                                             break
                                                 
                                                 process_bufer_set = set()
@@ -195,9 +211,11 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                         cur_per_change = ((y["last_close_price"] - x["prev_close_1m"]) / x["prev_close_1m"])* 100  
                                                         # coins_in_squeezeOn[i]["cur_per_change"] = cur_per_change
                                                           
-                                                        # print(cur_per_change)                                       
+                                                        # print(f'{x["symbol"]}: cur_per_change:  {cur_per_change}')                                       
 
-                                                        if cur_per_change >= x["cur_price_agregated_compearer_5"]:
+                                                        if (cur_per_change >= x["cur_price_agregated_compearer_5"]) and x["symbol"] not in pump_candidate_busy_list:
+                                                        # if cur_per_change >= 1:
+                                                            
                                                             curDataTime = await self.cur_dateTime()
                                                             print('cur_per_change >= self.PRICE_KLINE_1M_PERCENT_CHANGE')
                                                             # print(f'symbol: {x["symbol"]}')
@@ -205,9 +223,13 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                             # print(f'last_close_price: {y["last_close_price"]}')
                                                             
                                                             async with self.lock_candidate_coins:
+
                                                                 print('''hi self.pump_candidate_list.append((x["symbol"], 'PUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')
+                                                                # volum_confirma = False
+                                                                # volum_confirma = await self.volume_confirmation(x["symbol"])
+                                                                # if volum_confirma:
                                                                 self.pump_candidate_list.append((x["symbol"], 'PUMP', str(cur_per_change) + ' ' + '%', curDataTime))
-                                                                self.pump_candidate_busy_list.append(x["symbol"]) 
+                                                                pump_candidate_busy_list.append(x["symbol"]) 
                                                                 per_change_conditionTrue_flag = True                             
 
                                                         # elif cur_per_change <= -1*x["cur_price_agregated_compearer_5"]:
@@ -216,7 +238,7 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                         #     async with self.lock_candidate_coins: 
                                                         #         print('''hi self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))''')                           
                                                         #         self.pump_candidate_list.append((x["symbol"], 'DUMP', str(cur_per_change) + ' ' + '%', curDataTime))
-                                                        #         self.pump_candidate_busy_list.append(x["symbol"]) 
+                                                        #         pump_candidate_busy_list.append(x["symbol"]) 
                                                         #         per_change_conditionTrue_flag = True                                   
                                                         
                                                         else:
@@ -229,8 +251,18 @@ class LIVE_MONITORING(LIVE_MONITORING_ASSISTENT):
                                                         )
                                                         
                                                         break
-                                            coins_in_squeezeOn = [uk for uk in coins_in_squeezeOn if uk["symbol"] not in self.pump_candidate_busy_list] 
-                                            coins_in_squeezeOn, last_update_time, counter = await self.coins_in_squeezeOn_shejule_Updater(current_time, last_update_time, coins_in_squeezeOn, coins_in_squeezeOn_bufer, counter)                                          
+                                            coins_in_squeezeOn = [uk for uk in coins_in_squeezeOn if uk["symbol"] not in self.pump_candidate_busy_confirm_list] 
+                                            current_time = time.time()
+                                            if (current_time - last_update_time)/self.INTERVAL_CLOSEPRICE_MONITORING >= 1:
+                                                last_update_time = current_time
+                                                for j, z in enumerate(coins_in_squeezeOn):
+                                                    for bf in coins_in_squeezeOn_bufer:
+                                                        if z["symbol"] == bf["symbol"]:
+                                                            coins_in_squeezeOn[j]["prev_close_1m"] = bf["prev_close_1m"]
+                                                            break
+                                                print(f"counter: {counter}")
+                                                counter = 0
+                                            # coins_in_squeezeOn, last_update_time, counter = await self.coins_in_squeezeOn_shejule_Updater(current_time, last_update_time, coins_in_squeezeOn, coins_in_squeezeOn_bufer, counter)                                          
                                             process_list = []
                                             process_bufer_set = set()
                                             # print(coins_in_squeezeOn)

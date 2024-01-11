@@ -28,19 +28,19 @@ class TECHNIQUESS(GETT_API_CCXT):
 
         return df 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
-    async def volume_confirmation(self, symbol, slice_candles=10):
+    # async def volume_confirmation(self, symbol, slice_candles=10):
 
-        volume_confirmation_flag = False
-        self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
-        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-        timeframe = '1m'
-        limit = 15
-        m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)    
-        mean_volume_1m__7__3 = m1_data['Volume'].iloc[-slice_candles:-2].mean()   
-        mean_volume_1m__7__2 = m1_data['Volume'].iloc[-slice_candles:-1].mean()
-        volume_1m__2 = m1_data['Volume'].iloc[-2]
-        volume_1m__1 = m1_data['Volume'].iloc[-1]
-        if mean_volume_1m__7__2 != 0 and volume_1m__1 != 0: 
-            volume_confirmation_flag = (volume_1m__1 / mean_volume_1m__7__2 >= self.VOLUME_KLINE_1M_MULTIPLITER) or (volume_1m__2 / mean_volume_1m__7__3 >= self.VOLUME_KLINE_1M_MULTIPLITER)
+    #     volume_confirmation_flag = False
+    #     self.KLINE_TIME, self.TIME_FRAME = 1, 'm'
+    #     self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
+    #     timeframe = '1m'
+    #     limit = 15
+    #     m1_data = await self.get_ccxtBinance_klines(symbol, timeframe, limit)    
+    #     mean_volume_1m__7__3 = m1_data['Volume'].iloc[-slice_candles:-2].mean()   
+    #     mean_volume_1m__7__2 = m1_data['Volume'].iloc[-slice_candles:-1].mean()
+    #     volume_1m__2 = m1_data['Volume'].iloc[-2]
+    #     volume_1m__1 = m1_data['Volume'].iloc[-1]
+    #     if mean_volume_1m__7__2 != 0 and volume_1m__1 != 0: 
+    #         volume_confirmation_flag = (volume_1m__1 / mean_volume_1m__7__2 >= self.VOLUME_KLINE_1M_MULTIPLITER) or (volume_1m__2 / mean_volume_1m__7__3 >= self.VOLUME_KLINE_1M_MULTIPLITER)
 
-        return volume_confirmation_flag      
+    #     return volume_confirmation_flag      

@@ -165,6 +165,7 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                 # /////////////////////////////////////////////////////////////////////////////////////
                 async with self.lock_candidate_coins:
                     if self.websocket_pump_returned_flag:
+                        self.websocket_pump_returned_flag = False
                         self.signal_number_acumm_list, date_of_the_month_start = await self.signal_counter_assistent(self.pump_candidate_list, self.signal_number_acumm_list, date_of_the_month_start)
                         last_duration_time = time.time() - cur_time
                         duration = round(last_duration_time / 60, 2)
@@ -172,12 +173,13 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                         self.tg_response_allow = True
 
                 if self.tg_response_allow:
+                    self.tg_response_allow = False
                     response_textt = ""
 
                     for symbol, defender, cur_per_change, curTimee in self.pump_candidate_list:
                         volum_confirma = False
                         volum_confirma = await self.volume_confirmation(symbol)
-                        if volum_confirma:
+                        if volum_confirma:                        
                             signal_number = sum(1 for x in self.signal_number_acumm_list if x == symbol)
                             link = f"https://www.coinglass.com/tv/Binance_{symbol}"
                             if defender == "PUMP":
@@ -185,15 +187,16 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
                             else:
                                 defini_emoji_var = lower_trigon_emoji
                             response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{clock_emoji} ___ {curTimee}\n{defini_emoji_var} ___ {defender}\n{confirm_emoji} ___ {volum_confirma}\n{percent_emoji} ___ {cur_per_change}\n{film_emoji} ___ {duration} min\n{repeat_emoji} ___ {signal_number}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"
+                            async with self.lock_candidate_coins:
+                                self.pump_candidate_busy_confirm_list.append(symbol)
 
                     if response_textt:
                         message.text = self.connector_func(message, response_textt)
                             
-                    async with self.lock_candidate_coins:
-                        self.websocket_pump_returned_flag = False
+                    async with self.lock_candidate_coins:                        
                         self.pump_candidate_list = []
 
-                    self.tg_response_allow = False
+                    
                 # /////////////////////////////////////////////////////////////////////////////////////
                         
                 # /////////////////////////////////////////////////////////////////////////////////////

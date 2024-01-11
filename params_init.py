@@ -88,7 +88,7 @@ class INDICATRS_SETTINGS(FILTER_SET):
 
         # websocket params:
         # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
-        self.PRICE_KLINE_1M_MULTIPLITER = 7.0
+        self.PRICE_KLINE_1M_MULTIPLITER = 6.9
         self.VOLUME_KLINE_1M_MULTIPLITER = 4.9 # volum multipliter/1min
         self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec  
 
@@ -100,6 +100,7 @@ class TG_HANDLER_VARS(INDICATRS_SETTINGS):
         self.lock_candidate_coins = asyncio.Lock() 
         self.pump_candidate_set = set()     
         self.pump_candidate_list = [] 
+        self.pump_candidate_busy_confirm_list = []
 
         self.pump_candidate_busy_list = [] 
         self.signal_number_acumm_list = [] 
@@ -147,8 +148,8 @@ class OPEN_ORDER_PARAMS(TG_HANDLER_VARS):
         self.min_qnt_multipliter = None   
         self.margin_type = 'ISOLATED' # 'CROSS'
         self.static_liver_flag = True
-        self.leverage = 2
-        self.stopLoss_flag = True
+        self.leverage = 10
+        self.stopLoss_flag = False
         self.static_TP_flag = True       
         self.atr_multipliter = 4
         # self.TP_rate = int(self.atr_multipliter * 1.5)
