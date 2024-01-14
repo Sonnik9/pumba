@@ -70,7 +70,7 @@ class TIME_TEMPLATES(URL_TEMPLATES):
 class FILTER_SET(TIME_TEMPLATES):
     def __init__(self) -> None:
         super().__init__()
-        self.SLICE_VOLUME_PAIRS = 200 # volums
+        self.SLICE_VOLUME_PAIRS = 100 # volums
          
         # self.SLICE_VOLATILITY = 200 # volatility
         self.MIN_FILTER_PRICE = 0.0001 # min price
@@ -88,7 +88,7 @@ class INDICATRS_SETTINGS(FILTER_SET):
 
         # websocket params:
         # self.PRICE_KLINE_1M_PERCENT_CHANGE = 0.5 # % CHANGING/1min
-        self.PRICE_KLINE_1M_MULTIPLITER = 6.9
+        self.PRICE_KLINE_1M_MULTIPLITER = 4.9
         self.VOLUME_KLINE_1M_MULTIPLITER = 4.9 # volum multipliter/1min
         self.INTERVAL_CLOSEPRICE_MONITORING = 60 # sec  
 

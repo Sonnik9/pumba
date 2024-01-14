@@ -1,4 +1,4 @@
-#!/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/.venv/bin/python3
+#!/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/.venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

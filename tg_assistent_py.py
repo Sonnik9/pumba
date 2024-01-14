@@ -65,6 +65,7 @@ class TG_ASSISTENT(UTILS_APII, TECHNIQUESS, LIVE_MONITORING):
    
     async def squeeze_unMomentum_assignator(self):
         coins_in_squeezeOn_var = []
+        coins_in_squeezeOff_var = []
         top_coins = await self.assets_filters_1()
         print(f"len(top_coins): {len(top_coins)}")        
         timeframe = '15m'
@@ -86,10 +87,12 @@ class TG_ASSISTENT(UTILS_APII, TECHNIQUESS, LIVE_MONITORING):
                 if m15_data['squeeze_on'].iloc[-1]:   
                     precession_upgraded_data = await self.websocket_precession(symbol)                 
                     coins_in_squeezeOn_var.append(precession_upgraded_data)
+                elif m15_data['squeeze_off'].iloc[-1]:
+                    coins_in_squeezeOff_var.append(symbol)
             except Exception as ex:
                 logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
         coins_in_squeezeOn_var = [x for x in coins_in_squeezeOn_var if x != {}]
         # print(coins_in_squeezeOn_var)
 
-        return coins_in_squeezeOn_var
+        return coins_in_squeezeOn_var, coins_in_squeezeOff_var
