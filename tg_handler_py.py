@@ -135,16 +135,17 @@ class TG_BUTTON_HANDLER(TG_ASSISTENT):
 
                 if return_squeeze_unMomentum_assignator and return_squeeze_unMomentum_assignator.done():
                     result_squeeze_unMomentum_assignator = return_squeeze_unMomentum_assignator.result()
-                    print(result_squeeze_unMomentum_assignator)
+                    # print(result_squeeze_unMomentum_assignator)
                     coins_in_squeezeOn = result_squeeze_unMomentum_assignator[0][0]
                     coins_in_squeezeOff_var = result_squeeze_unMomentum_assignator[0][1]
+                    print(f"Монеты по выходу из сжатия: {coins_in_squeezeOff_var}\n {len(coins_in_squeezeOff_var)} шт")
                     response_textt = ""
                     for sy in coins_in_squeezeOff_var:
                         volum_confirma = False
                         volum_confirma = await self.volume_confirmation(sy)
-                        if volum_confirma:                          
-                            link = f"https://www.coinglass.com/tv/Binance_{sy}"
-                            response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {symbol}\n{confirm_emoji} ___ {volum_confirma}\n{percent_emoji} ___ {cur_per_change}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"                           
+                        # if volum_confirma:                          
+                        link = f"https://www.coinglass.com/tv/Binance_{sy}"
+                        response_textt += f"{money_emoji} {money_emoji} {money_emoji}\n\n{rocket_emoji} ___ {sy}\n{confirm_emoji} ___ {volum_confirma}\n{link_emoji} ___ {link}\n\n{money_emoji} {money_emoji} {money_emoji}"                   
 
                     if response_textt:
                         message.text = self.connector_func(message, response_textt)

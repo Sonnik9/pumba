@@ -54,3 +54,43 @@
     #             logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
     #     return quantity, recalc_depo, price_precision, tick_size
+
+
+    # async def coins_in_squeezeOn_shejule_Updater(self, current_time, last_update_time, coins_in_squeezeOn, coins_in_squeezeOn_bufer, counter):
+    #     if (current_time - last_update_time)/self.INTERVAL_CLOSEPRICE_MONITORING >= 1:
+    #         last_update_time = current_time
+    #         for j, z in enumerate(coins_in_squeezeOn):
+    #             for bf in coins_in_squeezeOn_bufer:
+    #                 if z["symbol"] == bf["symbol"]:
+    #                     coins_in_squeezeOn[j]["prev_close_1m"] = bf["prev_close_1m"]
+                            
+    #                     # try:
+    #                     #     coins_in_squeezeOn[j]["cur_price_agregated_compearer_5"] = coins_in_squeezeOn[i]["cur_per_change"]* self.PRICE_KLINE_1M_MULTIPLITER
+    #                     # except Exception as ex:
+    #                     #     print(ex)
+    #                     break
+    #         print(f"counter1: {counter}")
+    #         counter = 0  
+    #     return coins_in_squeezeOn, last_update_time, counter
+
+
+    # async def coin_squeezeOn_connectionExceptions(self, accum_counter_list, counter, process_bufer_set, coins_in_squeezeOn, streams, ws):
+    #     accum_counter_list.append(counter)
+    #     if (len(accum_counter_list) >7) and (all(element == accum_counter_list[-1] for element in accum_counter_list[-7:])):
+            
+    #         coins_in_squeezeOn = [coin for coin in coins_in_squeezeOn if coin['symbol'] in process_bufer_set]
+    #         streams = [f"{k['symbol'].lower()}@kline_1s" for k in coins_in_squeezeOn] 
+    #         accum_counter_list = []
+    #         await ws.close()
+
+    #     return accum_counter_list, coins_in_squeezeOn, streams, ws
+
+
+
+                                            # coins_in_squeezeOn, last_update_time, counter = await self.coins_in_squeezeOn_shejule_Updater(current_time, last_update_time, coins_in_squeezeOn, coins_in_squeezeOn_bufer, counter) 
+
+
+                                            # accum_counter_list, coins_in_squeezeOn, streams, ws = await self.coin_squeezeOn_connectionExceptions(accum_counter_list, counter, process_bufer_set, coins_in_squeezeOn, streams, ws)    
+
+                                            # coins_in_squeezeOn = [uk for uk in coins_in_squeezeOn if uk["symbol"] not in self.pump_candidate_busy_confirm_list]                  
+   

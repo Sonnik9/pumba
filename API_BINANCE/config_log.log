@@ -1,0 +1,42 @@
+ERROR:root:An error occurred in file 'websocket_handler.py', line 255: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 256: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 256: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 255: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 255: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 255: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websocket_handler.py', line 255: float() argument must be a string or a real number, not 'NoneType'
+Traceback (most recent call last):
+  File "/home/kali/Desktop/ALL_PROJECT/TREADING/PUMP_SKREENER/API_WEBSOCKET/websocket_handler.py", line 166, in websocket_handler
+    last_close_price = float(data.get('data',{}).get('k',{}).get('c'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
