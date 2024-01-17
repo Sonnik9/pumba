@@ -16,7 +16,27 @@ method = 'GET'
 
 class GETT_API_CCXT(CONNECTOR_TG):
     def __init__(self):   
-        super().__init__()     
+        super().__init__()  
+
+    async def get_ccxtBinance_balance(self):
+        
+        liq = None
+        retry_number = 3
+        decimal = 1.1        
+        for i in range(retry_number):
+            try:
+                liq = self.exchange.fetch_total_balance()
+                if liq:
+                    liq = [f"{key}: {value}" for key, value in liq.items() if float(value) !=0]
+                if liq:
+                    liq = '\n'.join(liq)
+                    return liq
+                return "Balance==0"
+            except Exception as ex:
+                logging.exception(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                await asyncio.sleep(1.1 + i*decimal)     
+
+        return "Some problem with fetching balance..."
 
     async def get_ccxtBinance_klines(self, symbol, timeframe, limit):
 
@@ -25,6 +45,7 @@ class GETT_API_CCXT(CONNECTOR_TG):
         for i in range(retry_number):
             try:
                 klines = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+                liq = self.exchange.fetch_liquidations()
                 data = pd.DataFrame(klines, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
                 data['Time'] = pd.to_datetime(data['Time'], unit='ms')
                 data.set_index('Time', inplace=True)
@@ -223,9 +244,10 @@ class GETT_API(GETT_API_CCXT):
 # print(klines_data)
 
 
-# GETT_API_CCXTxfjk = GETT_API_CCXT()
+GETT_API_CCXTxfjk = GETT_API_CCXT()
 # symbol = 'BTC/USDT'
-# klines = GETT_API_CCXTxfjk.get_ccxtBinance_klines_usual(symbol, '1m', 100)
+liq = asyncio.run(GETT_API_CCXTxfjk.get_ccxtBinance_balance())
+print(liq)
 # amount = 1.234567887  # amount in base currency BTC
 # price = 42500.321  # price in quote currency USDT
 # formatted_amount = GETT_API_CCXTxfjk.transformed_qnt(symbol, amount)
